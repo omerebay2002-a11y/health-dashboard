@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0D0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>הדשבורד של עומר</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<style>
+/* ====== tokens ====== */
+:root{
+  --bg:#0B0D0A;
+  --card:#13160F;
+  --card-2:#1A1E14;
+  --line:rgba(244,248,235,.07);
+  --line-strong:rgba(244,248,235,.13);
+  --tx:#F1F4EA;
+  --tx-2:#A9B19D;
+  --tx-3:#6E7562;
+  --acc:#B9E94E;
+  --acc-deep:#94C72E;
+  --on-acc:#16200A;
+  --warn:#E2B25E;
+  --r-card:20px;
+  --r-ctl:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--tx);
+  font-family:'Heebo',-apple-system,'Segoe UI',sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+.bg-glow{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(60% 30% at 50% -5%, rgba(185,233,78,.07), transparent 70%);
+}
+::selection{background:var(--acc);color:var(--on-acc)}
+input,button{font-family:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+/* ====== shell ====== */
+.shell{position:relative;z-index:1;max-width:620px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+header.app{
+  position:sticky;top:0;z-index:20;
+  padding:calc(14px + env(safe-area-inset-top)) 0 12px;
+  background:linear-gradient(var(--bg) 75%, transparent);
+}
+.app-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.greet h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.greet p{font-size:13px;color:var(--tx-2);margin-top:1px}
+.head-actions{display:flex;align-items:center;gap:8px;padding-top:4px}
+.chip-weight{
+  display:flex;align-items:center;gap:6px;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--tx-2);
+}
+.chip-weight b{color:var(--acc);font-weight:700}
+.icon-btn{
+  width:38px;height:38px;border-radius:999px;display:grid;place-items:center;
+  background:var(--card);border:1px solid var(--line);color:var(--tx-2);font-size:18px;
+  transition:transform .15s ease,color .15s ease;
+}
+.icon-btn:active{transform:scale(.94)}
+
+/* ====== cards ====== */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--r-card);
+  padding:18px;
+  margin-bottom:12px;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-title{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700}
+.card-title i{color:var(--acc);font-size:19px}
+.card-sub{font-size:12.5px;color:var(--tx-2)}
+.hint{font-size:12px;color:var(--tx-3)}
+
+/* ====== buttons ====== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border-radius:999px;font-weight:700;font-size:14px;
+  padding:11px 20px;
+  transition:transform .15s ease,opacity .15s ease,background .15s ease;
+  white-space:nowrap;
+}
+.btn:active{transform:scale(.97) translateY(1px)}
+.btn-acc{background:var(--acc);color:var(--on-acc)}
+.btn-acc:hover{background:#C6F263}
+.btn-ghost{background:transparent;border:1px solid var(--line-strong);color:var(--tx)}
+.btn-ghost:hover{border-color:var(--acc);color:var(--acc)}
+.btn-soft{background:var(--card-2);color:var(--tx)}
+.btn-wide{width:100%;padding:14px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn-text{font-size:13px;font-weight:600;color:var(--tx-2);padding:8px 4px}
+.btn-text:hover{color:var(--acc)}
+
+/* ====== workout ====== */
+.wk-type{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:700;color:var(--acc);
+  background:rgba(185,233,78,.1);border-radius:999px;padding:4px 12px;margin-bottom:10px;
+}
+.wk-name{font-size:21px;font-weight:800;letter-spacing:-.01em}
+.wk-note{
+  margin-top:10px;font-size:13px;color:var(--tx-2);
+  border-right:2px solid var(--acc);padding-right:10px;
+}
+.ex-list{margin-top:16px;display:flex;flex-direction:column}
+.ex-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 2px;border-top:1px solid var(--line);
+  transition:opacity .2s ease;
+}
+.ex-row.done .ex-name{color:var(--tx-3);text-decoration:line-through;text-decoration-color:var(--tx-3)}
+.ex-check{
+  flex:none;width:26px;height:26px;border-radius:999px;
+  border:1.5px solid var(--line-strong);display:grid;place-items:center;
+  color:transparent;font-size:14px;
+  transition:background .18s ease,border-color .18s ease,transform .18s ease;
+}
+.ex-row.done .ex-check{background:var(--acc);border-color:var(--acc);color:var(--on-acc);transform:scale(1.05)}
+.ex-name{font-size:14.5px;font-weight:500;flex:1}
+.ex-spec{font-size:13px;color:var(--tx-2);font-weight:600}
+.wk-progress{height:5px;background:var(--card-2);border-radius:99px;margin-top:14px;overflow:hidden}
+.wk-progress i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .4s cubic-bezier(.16,1,.3,1)}
+.wk-done-banner{
+  display:flex;align-items:center;gap:10px;margin-top:14px;
+  background:rgba(185,233,78,.1);border-radius:var(--r-ctl);padding:12px 14px;
+  color:var(--acc);font-weight:700;font-size:14px;
+}
+.rest-art{font-size:38px;color:var(--acc);margin-bottom:8px}
+
+/* ====== stats / rings ====== */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.tile{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:14px 12px;text-align:center;
+}
+.tile .t-val{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.tile .t-lab{font-size:11.5px;color:var(--tx-2);margin-top:2px}
+.tile.lit .t-val{color:var(--acc)}
+.rings{display:flex;justify-content:space-around;gap:8px;padding:6px 0 2px}
+.ring-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.ring-box{position:relative;width:118px;height:118px}
+.ring-box svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:var(--card-2);stroke-width:9}
+.ring-fg{
+  fill:none;stroke:var(--acc);stroke-width:9;stroke-linecap:round;
+  stroke-dasharray:314;stroke-dashoffset:314;
+  transition:stroke-dashoffset .8s cubic-bezier(.16,1,.3,1);
+}
+.ring-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.ring-center b{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.ring-center span{font-size:11px;color:var(--tx-2)}
+.ring-lab{font-size:13px;font-weight:600;color:var(--tx-2)}
+.macro-row{display:flex;justify-content:space-between;border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+.macro-cell{text-align:center;flex:1}
+.macro-cell b{display:block;font-size:16px;font-weight:700}
+.macro-cell span{font-size:11.5px;color:var(--tx-3)}
+.macro-cell.over b{color:var(--warn)}
+
+/* ====== meals ====== */
+.meal-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:16px 18px;margin-bottom:12px;
+}
+.meal-slot{font-size:12px;font-weight:700;color:var(--tx-2);margin-bottom:6px}
+.meal-name{font-size:16px;font-weight:700;line-height:1.35}
+.meal-macros{font-size:13px;color:var(--tx-2);margin-top:5px;font-weight:600}
+.meal-actions{display:flex;gap:8px;margin-top:14px}
+.meal-card.eaten{border-color:rgba(185,233,78,.35)}
+.meal-card.eaten .meal-slot{color:var(--acc)}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick-chip{
+  display:flex;flex-direction:column;align-items:flex-start;gap:1px;
+  background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-ctl);
+  padding:10px 12px;text-align:right;
+  transition:border-color .15s ease,transform .15s ease;
+}
+.quick-chip:active{transform:scale(.97)}
+.quick-chip:hover{border-color:var(--acc)}
+.quick-chip b{font-size:13.5px;font-weight:600}
+.quick-chip span{font-size:11.5px;color:var(--tx-3);font-weight:600}
+.custom-add{display:flex;gap:8px;margin-top:10px}
+.custom-add input{flex:1;min-width:0}
+
+/* ====== inputs ====== */
+input[type=number],input[type=text]{
+  background:var(--card-2);border:1px solid var(--line);border-radius:var(--r-ctl);
+  padding:11px 13px;font-size:14.5px;font-weight:600;width:100%;
+  outline:none;transition:border-color .15s ease;
+  appearance:textfield;-moz-appearance:textfield;
+}
+input[type=number]::-webkit-inner-spin-button{display:none}
+input:focus{border-color:var(--acc)}
+input::placeholder{color:var(--tx-3);font-weight:500}
+label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margin:0 0 6px}
+
+/* ====== habits ====== */
+.counter-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.counter-val{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.counter-val small{font-size:14px;color:var(--tx-2);font-weight:600}
+.step-btn{
+  width:44px;height:44px;border-radius:999px;display:grid;place-items:center;
+  background:var(--card-2);border:1px solid var(--line-strong);font-size:18px;color:var(--tx);
+  transition:transform .12s ease,border-color .15s ease;
+}
+.step-btn:active{transform:scale(.92)}
+.step-btn:hover{border-color:var(--acc);color:var(--acc)}
+.seg-bar{display:flex;gap:4px;margin-top:14px}
+.seg{flex:1;height:7px;border-radius:99px;background:var(--card-2);transition:background .25s ease}
+.seg.on{background:var(--acc)}
+.bar{height:7px;background:var(--card-2);border-radius:99px;margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .5s cubic-bezier(.16,1,.3,1)}
+.h-row{display:flex;align-items:center;gap:12px;padding:13px 2px;border-top:1px solid var(--line)}
+.h-row:first-of-type{border-top:none}
+.h-ico{flex:none;width:38px;height:38px;border-radius:12px;background:var(--card-2);display:grid;place-items:center;font-size:18px;color:var(--acc)}
+.h-name{flex:1;font-size:14.5px;font-weight:600}
+.h-sub{display:block;font-size:11.5px;color:var(--tx-3);font-weight:500}
+.switch{
+  flex:none;width:46px;height:27px;border-radius:99px;background:var(--card-2);
+  border:1px solid var(--line-strong);position:relative;transition:background .2s ease,border-color .2s ease;
+}
+.switch::after{
+  content:'';position:absolute;top:2.5px;right:3px;width:20px;height:20px;border-radius:99px;
+  background:var(--tx-2);transition:transform .2s cubic-bezier(.16,1,.3,1),background .2s ease;
+}
+.switch.on{background:var(--acc);border-color:var(--acc)}
+.switch.on::after{transform:translateX(-19px);background:var(--on-acc)}
+
+/* ====== week ====== */
+.week-strip{display:flex;justify-content:space-between;gap:6px}
+.wday{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px}
+.wday span{font-size:12px;color:var(--tx-3);font-weight:600}
+.wday.today span{color:var(--acc)}
+.wday-dot{
+  width:34px;height:34px;border-radius:999px;display:grid;place-items:center;
+  border:1.5px solid var(--line-strong);font-size:14px;color:var(--tx-3);
+}
+.wday-dot.done{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.wday-dot.rest{border-style:dashed;border-color:var(--line)}
+.wday-dot.missed{border-color:var(--line);color:var(--tx-3)}
+.streak-row{display:flex;gap:8px}
+.streak-chip{
+  flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:13px 10px;text-align:center;
+}
+.streak-chip b{display:block;font-size:20px;font-weight:800;color:var(--acc)}
+.streak-chip span{font-size:11.5px;color:var(--tx-2)}
+.weight-flex{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.weight-now{font-size:34px;font-weight:800;letter-spacing:-.03em}
+.weight-now small{font-size:14px;font-weight:600;color:var(--tx-2)}
+.spark{width:130px;height:42px;flex:none}
+.spark polyline{fill:none;stroke:var(--acc);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.spark circle{fill:var(--acc)}
+.weight-add{display:flex;gap:8px;margin-top:14px}
+.weight-add input{flex:1}
+
+/* ====== tabbar ====== */
+.tabbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  display:flex;justify-content:center;
+  background:rgba(11,13,10,.82);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.tabbar-inner{display:flex;width:100%;max-width:620px}
+.tab-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 0 9px;color:var(--tx-3);font-size:10.5px;font-weight:600;
+  transition:color .15s ease;
+}
+.tab-btn i{font-size:21px}
+.tab-btn.active{color:var(--acc)}
+
+/* ====== views ====== */
+.view{animation:viewIn .3s cubic-bezier(.16,1,.3,1)}
+.view.hidden{display:none}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-title{font-size:13px;font-weight:700;color:var(--tx-2);margin:18px 2px 10px}
+
+/* ====== sheet (settings) ====== */
+.sheet-veil{
+  position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.sheet-veil.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;bottom:0;left:0;right:0;z-index:41;
+  max-width:620px;margin:0 auto;
+  background:var(--card);border:1px solid var(--line);border-bottom:none;
+  border-radius:24px 24px 0 0;
+  padding:20px 20px calc(20px + env(safe-area-inset-bottom));
+  transform:translateY(105%);transition:transform .35s cubic-bezier(.16,1,.3,1);
+  max-height:86dvh;overflow-y:auto;
+}
+.sheet.open{transform:none}
+.sheet h2{font-size:18px;font-weight:800;margin-bottom:16px}
+.sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sheet-grid .full{grid-column:1/-1}
+.sheet-foot{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.danger-row{display:flex;gap:8px;justify-content:center;margin-top:4px}
+.danger-row button{font-size:12px;color:var(--tx-3);padding:6px 10px}
+.danger-row button:hover{color:var(--warn)}
+
+/* ====== toast ====== */
+#toast{
+  position:fixed;bottom:calc(86px + env(safe-area-inset-bottom));left:50%;z-index:50;
+  transform:translate(-50%,16px);
+  background:var(--card-2);border:1px solid var(--line-strong);color:var(--tx);
+  font-size:13.5px;font-weight:600;border-radius:999px;padding:10px 20px;
+  opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;
+  white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (min-width:560px){
+  .quick-grid{grid-template-columns:1fr 1fr 1fr 1fr}
+  .ring-box{width:132px;height:132px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<div class="shell">
+  <header class="app">
+    <div class="app-row">
+      <div class="greet">
+        <h1 id="greeting">בוקר טוב</h1>
+        <p id="head-date"></p>
+      </div>
+      <div class="head-actions">
+        <div class="chip-weight" id="chip-weight"></div>
+        <button class="icon-btn" data-act="open-settings" aria-label="הגדרות"><i class="ph ph-gear-six"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-today" class="view"></section>
+    <section id="view-food" class="view hidden"></section>
+    <section id="view-habits" class="view hidden"></section>
+    <section id="view-week" class="view hidden"></section>
+  </main>
+</div>
+
+<nav class="tabbar">
+  <div class="tabbar-inner">
+    <button class="tab-btn active" data-act="tab" data-arg="today"><i class="ph-fill ph-barbell"></i>היום</button>
+    <button class="tab-btn" data-act="tab" data-arg="food"><i class="ph ph-fork-knife"></i>תזונה</button>
+    <button class="tab-btn" data-act="tab" data-arg="habits"><i class="ph ph-list-checks"></i>הרגלים</button>
+    <button class="tab-btn" data-act="tab" data-arg="week"><i class="ph ph-chart-line-up"></i>שבוע</button>
+  </div>
+</nav>
+
+<div class="sheet-veil" id="veil" data-act="close-settings"></div>
+<div class="sheet" id="sheet">
+  <h2>הגדרות ויעדים</h2>
+  <div class="sheet-grid">
+    <div class="full">
+      <label class="fld" for="s-name">שם</label>
+      <input type="text" id="s-name">
+    </div>
+    <div>
+      <label class="fld" for="s-cal">יעד קלוריות יומי</label>
+      <input type="number" id="s-cal" inputmode="numeric">
+    </div>
+    <div>
+      <label class="fld" for="s-prot">יעד חלבון (גרם)</label>
+      <input type="number" id="s-prot" inputmode="numeric">
+    </div>
+    <div>
+      <label class="fld" for="s-water">יעד מים (כוסות)</label>
+      <input type="number" id="s-water" inputmode="numeric">
+    </div>
+    <div>
+      <label class="fld" for="s-steps">יעד צעדים</label>
+      <input type="number" id="s-steps" inputmode="numeric">
+    </div>
+    <div>
+      <label class="fld" for="s-sleep">יעד שינה (שעות)</label>
+      <input type="number" id="s-sleep" step="0.5" inputmode="decimal">
+    </div>
+    <div>
+      <label class="fld" for="s-goalw">משקל יעד (ק"ג)</label>
+      <input type="number" id="s-goalw" step="0.1" inputmode="decimal">
+    </div>
+    <div class="full">
+      <label class="fld" for="s-startw">משקל התחלה (ק"ג)</label>
+      <input type="number" id="s-startw" step="0.1" inputmode="decimal">
+    </div>
+  </div>
+  <div class="sheet-foot">
+    <button class="btn btn-acc btn-wide" data-act="save-settings">שמירה</button>
+    <div class="danger-row">
+      <button data-act="reset-day">איפוס היום הנוכחי</button>
+      <button data-act="reset-all">איפוס כל הנתונים</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =====================================================
+   הדשבורד של עומר: אימונים, תזונה טבעונית, הרגלים
+   קובץ יחיד, נתונים נשמרים ב-localStorage בלבד.
+===================================================== */
+
+const KEY = 'fitos-omer-v1';
+
+const DEFAULTS = {
+  settings: {
+    name: 'עומר',
+    calTarget: 2100,
+    proteinTarget: 120,
+    waterTarget: 10,
+    stepsTarget: 10000,
+    sleepTarget: 7.5,
+    startWeight: 68,
+    goalWeight: 65
+  },
+  days: {},
+  weights: []
+};
+
+/* ---------- תוכנית אימונים שבועית ----------
+   3 כוח + 2 אירובי, ויום שישי מתחלף כל שבוע
+   (כוח/אירובי לסירוגין) כדי לשמור על יחס חצי-חצי. */
+const FRIDAY_STRENGTH = {
+  type: 'strength', title: 'כוח, גוף מלא', icon: 'ph-barbell',
+  note: 'אימון אחרון לשבוע. טכניקה נקייה לפני משקל.',
+  ex: [
+    { n: 'דדליפט רומני', d: '4×8' },
+    { n: 'לחיצת רגליים', d: '3×10' },
+    { n: 'לחיצת חזה בשיפוע', d: '3×10' },
+    { n: 'חתירה רחבה', d: '3×10' },
+    { n: 'כפיפות בטן עם משקל', d: '3×15' }
+  ]
+};
+const FRIDAY_CARDIO = {
+  type: 'cardio', title: 'אירובי, ריצה ארוכה', icon: 'ph-sneaker-move',
+  note: 'קצב נוח ורציף. הריצה הארוכה בונה את הבסיס האירובי.',
+  ex: [
+    { n: 'חימום הליכה מהירה', d: '5 דק׳' },
+    { n: 'ריצה קלה רציפה', d: '40 דק׳' },
+    { n: 'שחרור ומתיחות', d: '5 דק׳' }
+  ]
+};
+
+const PROGRAM = [
+  { /* ראשון */
+    type: 'strength', title: 'כוח, דחיפה', icon: 'ph-barbell',
+    note: 'חימום 5 דקות וסט ראשון קל. עולים במשקל רק כשהטכניקה נקייה.',
+    ex: [
+      { n: 'לחיצת חזה במוט', d: '4×8' },
+      { n: 'לחיצת כתפיים בעמידה', d: '3×10' },
+      { n: 'מקבילים או דיפס על ספסל', d: '3×10' },
+      { n: 'הרחקות צד עם משקולות', d: '3×12' },
+      { n: 'פלאנק', d: '3×45 שנ׳' }
+    ]
+  },
+  { /* שני */
+    type: 'cardio', title: 'אירובי, זון 2', icon: 'ph-heartbeat',
+    note: 'קצב שיחה. אם אי אפשר לדבר תוך כדי, מאטים.',
+    ex: [
+      { n: 'חימום הליכה', d: '5 דק׳' },
+      { n: 'ריצה קלה בדופק 130-140', d: '35 דק׳' },
+      { n: 'שחרור והליכה', d: '5 דק׳' }
+    ]
+  },
+  { /* שלישי */
+    type: 'strength', title: 'כוח, משיכה ורגליים', icon: 'ph-barbell',
+    note: 'סקוואט לעומק נוח, גב ניטרלי לאורך כל הסט.',
+    ex: [
+      { n: 'סקוואט', d: '4×8' },
+      { n: 'מתח או פולי עליון', d: '4×8' },
+      { n: 'חתירה בישיבה', d: '3×10' },
+      { n: 'כפיפת מרפקים', d: '3×12' },
+      { n: 'הרמות רגליים בתלייה', d: '3×12' }
+    ]
+  },
+  { /* רביעי */
+    type: 'rest', title: 'מנוחה', icon: 'ph-moon-stars',
+    note: 'הגוף נבנה דווקא היום. הליכה קלה של 20 דקות אם מתחשק, ושינה טובה.',
+    ex: []
+  },
+  { /* חמישי */
+    type: 'cardio', title: 'אירובי, אינטרוולים', icon: 'ph-lightning',
+    note: 'הדקה המהירה היא מאמץ 8 מתוך 10. לשמור על נשימה מסודרת.',
+    ex: [
+      { n: 'חימום ריצה קלה', d: '10 דק׳' },
+      { n: '6 × (דקה מהירה / 2 דקות קלות)', d: '18 דק׳' },
+      { n: 'שחרור', d: '7 דק׳' }
+    ]
+  },
+  null, /* שישי: מתחלף לפי שבוע */
+  { /* שבת */
+    type: 'rest', title: 'מנוחה', icon: 'ph-moon-stars',
+    note: 'שבת של מתיחות קלות והרבה מים. מחר מתחילים שבוע חדש.',
+    ex: []
+  }
+];
+
+/* ---------- מאגר ארוחות טבעוניות (צהריים / ערב) ----------
+   הערכים משוערים למנה ביתית סטנדרטית. */
+const MEALS = [
+  { id: 'seitan-schnitzel', name: 'שניצל סייטן עם פירה וסלט ירוק',            kcal: 640, prot: 42 },
+  { id: 'tofu-stirfry',     name: 'טופו מוקפץ בסויה ושומשום עם אורז יסמין',     kcal: 560, prot: 34 },
+  { id: 'lentil-pasta',     name: 'פסטה מעדשים אדומות ברוטב עגבניות ושמרי בירה', kcal: 590, prot: 40 },
+  { id: 'lentil-curry',     name: 'קארי עדשים בחלב קוקוס עם אורז בסמטי',        kcal: 620, prot: 26 },
+  { id: 'buddha-bowl',      name: 'קערת קינואה עם חומוס, אדממה וטחינה',          kcal: 600, prot: 30 },
+  { id: 'tempeh-sweet',     name: 'טמפה בגריל עם בטטה אפויה וברוקולי',           kcal: 570, prot: 36 },
+  { id: 'vegan-burger',     name: 'המבורגר טבעוני בלחמנייה מלאה עם אבוקדו',      kcal: 650, prot: 35 },
+  { id: 'majadra',          name: 'מג׳דרה עם סלט קצוץ וטחינה',                  kcal: 580, prot: 21 },
+  { id: 'baked-tofu',       name: 'טופו אפוי במרינדה עם קוסקוס מלא וירקות',      kcal: 540, prot: 35 },
+  { id: 'bean-chili',       name: 'צ׳ילי שעועית וסויה עם אורז מלא',              kcal: 610, prot: 33 },
+  { id: 'tofu-shakshuka',   name: 'שקשוקת טופו עם לחם מחמצת',                   kcal: 480, prot: 28 },
+  { id: 'lentil-salad',     name: 'סלט עדשים שחורות, בטטה וגרעיני דלעת',         kcal: 520, prot: 24 },
+  { id: 'pad-thai',         name: 'פאד תאי טופו עם אטריות אורז ובוטנים',         kcal: 600, prot: 30 },
+  { id: 'lentil-balls',     name: 'קציצות עדשים ברוטב עגבניות עם אורז מלא',      kcal: 590, prot: 28 }
+];
+
+const QUICK_ADDS = [
+  { name: 'שייק חלבון סויה',      kcal: 220, prot: 25 },
+  { name: 'יוגורט סויה וגרנולה',  kcal: 280, prot: 14 },
+  { name: 'טוסט ממרח בוטנים',     kcal: 320, prot: 12 },
+  { name: 'פרי',                  kcal: 90,  prot: 1 }
+];
+
+const SUPPS = [
+  { key: 'b12',   name: 'B12',          sub: '1000 מק"ג, מתחת ללשון' },
+  { key: 'd',     name: 'ויטמין D',     sub: '1000-2000 יחב"ל עם ארוחה' },
+  { key: 'omega', name: 'אומגה 3 מאצות', sub: 'DHA+EPA, עם ארוחה שומנית' }
+];
+
+const HABITS = [
+  { key: 'stretch', name: 'מתיחות 10 דקות', sub: 'שומר על הגוף זמין לאימון הבא', icon: 'ph-person-arms-spread' },
+  { key: 'prep',    name: 'הכנת אוכל למחר',  sub: 'ההרגל שמחזיק את כל השאר',      icon: 'ph-cooking-pot' }
+];
+
+const DAY_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
+
+/* ---------- state ---------- */
+let state = load();
+let activeTab = 'today';
+
+function load() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(KEY));
+    if (raw && raw.settings) {
+      return {
+        settings: { ...DEFAULTS.settings, ...raw.settings },
+        days: raw.days || {},
+        weights: raw.weights || []
+      };
+    }
+  } catch (e) { /* נתונים פגומים: מתחילים נקי */ }
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+function dateKey(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function todayKey() { return dateKey(new Date()); }
+
+const EMPTY_DAY = () => ({
+  workoutDone: false, exDone: [],
+  cal: 0, prot: 0,
+  water: 0, sleep: 0, steps: 0,
+  supps: { b12: false, d: false, omega: false },
+  habits: { stretch: false, prep: false },
+  meals: null
+});
+function day(k = todayKey()) {
+  if (!state.days[k]) state.days[k] = EMPTY_DAY();
+  const d = state.days[k];
+  if (!d.supps) d.supps = { b12: false, d: false, omega: false };
+  if (!d.habits) d.habits = { stretch: false, prep: false };
+  return d;
+}
+function dayRO(k) { return state.days[k] || EMPTY_DAY(); }
+
+/* שבוע מתחיל ביום ראשון. אינדקס שבוע גלובלי לקביעת שישי כוח/אירובי */
+function weekIndex(d) {
+  const days = Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 86400000);
+  return Math.floor((days + 4) / 7);
+}
+function getProgram(d) {
+  const dow = d.getDay();
+  if (dow === 5) return weekIndex(d) % 2 === 0 ? FRIDAY_STRENGTH : FRIDAY_CARDIO;
+  return PROGRAM[dow];
+}
+function weekDates(ref = new Date()) {
+  const start = new Date(ref);
+  start.setDate(ref.getDate() - ref.getDay());
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return d;
+  });
+}
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+function typeLabel(t) { return t === 'strength' ? 'אימון כוח' : t === 'cardio' ? 'אימון אירובי' : 'מנוחה'; }
+
+let toastTimer = null;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function currentWeight() {
+  if (state.weights.length) return state.weights[state.weights.length - 1].kg;
+  return state.settings.startWeight;
+}
+
+/* ---------- מחולל תפריט ---------- */
+function mealById(id) { return MEALS.find(m => m.id === id); }
+
+function candidates(slot) {
+  const s = state.settings;
+  const calBudget = s.calTarget * (slot === 'lunch' ? 0.33 : 0.30);
+  const protGoal = s.proteinTarget * 0.30;
+  return MEALS
+    .map(m => ({ m, score: Math.abs(m.kcal - calBudget) / calBudget * 60 + Math.max(0, protGoal - m.prot) * 1.6 }))
+    .sort((a, b) => a.score - b.score)
+    .map(x => x.m);
+}
+
+function generatePlan() {
+  const d = day();
+  const keep = d.meals || {};
+  const lunchPool = candidates('lunch');
+  const dinnerPool = candidates('dinner');
+  let lunchId = keep.lunchEaten ? keep.lunch : lunchPool[Math.floor(Math.random() * 4)].id;
+  let dinner = keep.dinnerEaten
+    ? mealById(keep.dinner)
+    : dinnerPool.filter(m => m.id !== lunchId)[Math.floor(Math.random() * 4)];
+  d.meals = {
+    lunch: lunchId, dinner: dinner.id,
+    lunchEaten: !!keep.lunchEaten, dinnerEaten: !!keep.dinnerEaten
+  };
+  save(); render();
+}
+
+function replaceMeal(slot) {
+  const d = day();
+  if (!d.meals || d.meals[slot + 'Eaten']) return;
+  const other = slot === 'lunch' ? d.meals.dinner : d.meals.lunch;
+  const pool = candidates(slot).filter(m => m.id !== d.meals[slot] && m.id !== other).slice(0, 6);
+  d.meals[slot] = pool[Math.floor(Math.random() * pool.length)].id;
+  save(); render();
+}
+
+function toggleEaten(slot) {
+  const d = day();
+  if (!d.meals) return;
+  const m = mealById(d.meals[slot]);
+  const k = slot + 'Eaten';
+  if (d.meals[k]) {
+    d.meals[k] = false;
+    d.cal = Math.max(0, d.cal - m.kcal);
+    d.prot = Math.max(0, d.prot - m.prot);
+  } else {
+    d.meals[k] = true;
+    d.cal += m.kcal;
+    d.prot += m.prot;
+    toast('נרשם. עוד צעד קדימה');
+  }
+  save(); render();
+}
+
+/* ---------- רצפים ---------- */
+function streak(test) {
+  let count = 0;
+  const d = new Date();
+  if (!test(dayRO(dateKey(d)))) d.setDate(d.getDate() - 1); /* היום עוד לא הושלם, לא שובר רצף */
+  for (let i = 0; i < 400; i++) {
+    if (test(dayRO(dateKey(d)))) { count++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return count;
+}
+function trainingStreak() {
+  let count = 0;
+  const d = new Date();
+  const isDone = dt => dayRO(dateKey(dt)).workoutDone;
+  const isRest = dt => getProgram(dt).type === 'rest';
+  if (!isRest(d) && !isDone(d)) d.setDate(d.getDate() - 1);
+  for (let i = 0; i < 400; i++) {
+    if (isRest(d)) { d.setDate(d.getDate() - 1); continue; }
+    if (isDone(d)) { count++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return count;
+}
+
+/* ---------- render: header ---------- */
+function renderHeader() {
+  const s = state.settings;
+  const h = new Date().getHours();
+  const word = h < 5 ? 'לילה טוב' : h < 12 ? 'בוקר טוב' : h < 17 ? 'צהריים טובים' : h < 21 ? 'ערב טוב' : 'לילה טוב';
+  $('#greeting').textContent = word + ', ' + s.name;
+  $('#head-date').textContent = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  const cw = currentWeight();
+  $('#chip-weight').innerHTML = '<span class="num">' + cw.toFixed(1) + '</span><i class="ph ph-arrow-left" style="font-size:11px"></i><b class="num">' + s.goalWeight.toFixed(0) + ' ק"ג</b>';
+}
+
+/* ---------- render: today ---------- */
+function renderToday() {
+  const s = state.settings;
+  const d = day();
+  const prog = getProgram(new Date());
+  let html = '';
+
+  if (prog.type === 'rest') {
+    html += `
+    <div class="card" style="text-align:center;padding:30px 20px">
+      <div class="rest-art"><i class="ph ${prog.icon}"></i></div>
+      <div class="wk-name">יום מנוחה</div>
+      <p style="font-size:13.5px;color:var(--tx-2);margin-top:8px;max-width:300px;margin-inline:auto">${prog.note}</p>
+    </div>`;
+  } else {
+    if (d.exDone.length !== prog.ex.length) d.exDone = prog.ex.map(() => false);
+    const doneCount = d.exDone.filter(Boolean).length;
+    const pct = prog.ex.length ? Math.round(doneCount / prog.ex.length * 100) : 0;
+    html += `
+    <div class="card">
+      <span class="wk-type"><i class="ph ${prog.icon}"></i>${typeLabel(prog.type)}</span>
+      <div class="wk-name">${prog.title}</div>
+      <div class="wk-note">${prog.note}</div>
+      <div class="ex-list">
+        ${prog.ex.map((ex, i) => `
+        <button class="ex-row ${d.exDone[i] ? 'done' : ''}" data-act="toggle-ex" data-arg="${i}">
+          <span class="ex-check"><i class="ph ph-check"></i></span>
+          <span class="ex-name">${esc(ex.n)}</span>
+          <span class="ex-spec num">${esc(ex.d)}</span>
+        </button>`).join('')}
+      </div>
+      <div class="wk-progress"><i style="width:${pct}%"></i></div>
+      ${d.workoutDone
+        ? `<div class="wk-done-banner"><i class="ph ph-check-circle"></i>האימון הושלם. עבודה יפה.</div>
+           <button class="btn-text" data-act="undo-workout" style="margin-top:6px">ביטול סימון</button>`
+        : `<button class="btn btn-acc btn-wide" data-act="finish-workout" style="margin-top:16px">סיום אימון</button>`}
+    </div>`;
+  }
+
+  /* מבט מהיר על היום */
+  const calLeft = Math.max(0, s.calTarget - d.cal);
+  const protLeft = Math.max(0, s.proteinTarget - d.prot);
+  html += `
+  <div class="sec-title">מבט מהיר</div>
+  <div class="stat-grid">
+    <button class="tile ${d.cal > 0 ? 'lit' : ''}" data-act="tab" data-arg="food">
+      <div class="t-val num">${calLeft.toLocaleString('he-IL')}</div>
+      <div class="t-lab">קלוריות נותרו</div>
+    </button>
+    <button class="tile ${d.prot > 0 ? 'lit' : ''}" data-act="tab" data-arg="food">
+      <div class="t-val num">${protLeft} ג׳</div>
+      <div class="t-lab">חלבון נותר</div>
+    </button>
+    <button class="tile ${d.water >= s.waterTarget ? 'lit' : ''}" data-act="tab" data-arg="habits">
+      <div class="t-val num">${d.water}/${s.waterTarget}</div>
+      <div class="t-lab">כוסות מים</div>
+    </button>
+  </div>`;
+
+  $('#view-today').innerHTML = html;
+}
+
+/* ---------- render: food ---------- */
+function ringSVG(id, value, target, unit, label) {
+  const pct = target > 0 ? Math.min(1, value / target) : 0;
+  const C = 314; /* 2πr, r=50 */
+  return `
+  <div class="ring-wrap">
+    <div class="ring-box">
+      <svg viewBox="0 0 120 120">
+        <circle class="ring-track" cx="60" cy="60" r="50"></circle>
+        <circle class="ring-fg" id="${id}" cx="60" cy="60" r="50" style="stroke-dashoffset:${C - C * pct}"></circle>
+      </svg>
+      <div class="ring-center">
+        <b class="num">${Math.round(value).toLocaleString('he-IL')}</b>
+        <span class="num">מתוך ${Math.round(target).toLocaleString('he-IL')} ${unit}</span>
+      </div>
+    </div>
+    <span class="ring-lab">${label}</span>
+  </div>`;
+}
+
+function renderFood() {
+  const s = state.settings;
+  const d = day();
+  const calLeft = s.calTarget - d.cal;
+  const protLeft = s.proteinTarget - d.prot;
+
+  let html = `
+  <div class="card">
+    <div class="rings">
+      ${ringSVG('ring-cal', d.cal, s.calTarget, 'קק"ל', 'קלוריות')}
+      ${ringSVG('ring-prot', d.prot, s.proteinTarget, 'ג׳', 'חלבון')}
+    </div>
+    <div class="macro-row">
+      <div class="macro-cell ${calLeft < 0 ? 'over' : ''}">
+        <b class="num">${calLeft >= 0 ? calLeft.toLocaleString('he-IL') : 'חריגה ' + Math.abs(calLeft)}</b>
+        <span>קק"ל נותרו</span>
+      </div>
+      <div class="macro-cell">
+        <b class="num">${protLeft >= 0 ? protLeft : 0} ג׳</b>
+        <span>חלבון נותר</span>
+      </div>
+      <div class="macro-cell">
+        <b class="num">${d.prot > 0 ? Math.round(d.prot / s.proteinTarget * 100) + '%' : '0%'}</b>
+        <span>מהיעד היומי</span>
+      </div>
+    </div>
+  </div>`;
+
+  /* תפריט צהריים וערב */
+  html += `<div class="sec-title">התפריט של היום</div>`;
+  if (!d.meals) {
+    html += `
+    <div class="card" style="text-align:center;padding:26px 20px">
+      <p style="font-size:14px;color:var(--tx-2);max-width:300px;margin:0 auto 16px">
+        תפריט טבעוני לצהריים ולערב, מותאם ליעד של ${s.calTarget.toLocaleString('he-IL')} קק"ל ו-${s.proteinTarget} גרם חלבון.
+      </p>
+      <button class="btn btn-acc" data-act="gen-plan"><i class="ph ph-sparkle"></i>בנה לי תפריט</button>
+    </div>`;
+  } else {
+    const slots = [
+      { key: 'lunch', label: 'צהריים' },
+      { key: 'dinner', label: 'ערב' }
+    ];
+    for (const sl of slots) {
+      const m = mealById(d.meals[sl.key]);
+      const eaten = d.meals[sl.key + 'Eaten'];
+      html += `
+      <div class="meal-card ${eaten ? 'eaten' : ''}">
+        <div class="meal-slot">${sl.label}${eaten ? ' · נאכל' : ''}</div>
+        <div class="meal-name">${esc(m.name)}</div>
+        <div class="meal-macros num">${m.kcal} קק"ל · ${m.prot} ג׳ חלבון</div>
+        <div class="meal-actions">
+          <button class="btn ${eaten ? 'btn-soft' : 'btn-acc'}" style="flex:1" data-act="eat" data-arg="${sl.key}">
+            ${eaten ? 'ביטול' : 'אכלתי'}
+          </button>
+          <button class="btn btn-ghost" data-act="swap" data-arg="${sl.key}" ${eaten ? 'disabled' : ''}>
+            <i class="ph ph-arrows-clockwise"></i>החלפה
+          </button>
+        </div>
+      </div>`;
+    }
+    html += `<button class="btn-text" data-act="gen-plan"><i class="ph ph-arrows-clockwise" style="font-size:12px"></i> תפריט חדש לגמרי</button>`;
+  }
+
+  /* הוספות מהירות */
+  html += `
+  <div class="sec-title">הוספה מהירה</div>
+  <div class="quick-grid">
+    ${QUICK_ADDS.map((q, i) => `
+    <button class="quick-chip" data-act="quick" data-arg="${i}">
+      <b>${esc(q.name)}</b>
+      <span class="num">${q.kcal} קק"ל · ${q.prot} ג׳</span>
+    </button>`).join('')}
+  </div>
+  <div class="custom-add">
+    <input type="number" id="add-cal" placeholder="קק&quot;ל" inputmode="numeric">
+    <input type="number" id="add-prot" placeholder="חלבון ג׳" inputmode="numeric">
+    <button class="btn btn-soft" data-act="custom-add"><i class="ph ph-plus"></i>הוספה</button>
+  </div>
+  <p class="hint" style="margin-top:10px">הערכים משוערים למנה ביתית. <button class="btn-text" data-act="reset-food" style="display:inline;padding:0;font-size:12px">איפוס תזונה להיום</button></p>`;
+
+  $('#view-food').innerHTML = html;
+}
+
+/* ---------- render: habits ---------- */
+function renderHabits() {
+  const s = state.settings;
+  const d = day();
+
+  const waterSegs = Array.from({ length: s.waterTarget }, (_, i) => `<span class="seg ${i < d.water ? 'on' : ''}"></span>`).join('');
+  const stepsPct = Math.min(100, Math.round((d.steps || 0) / s.stepsTarget * 100));
+
+  let html = `
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title"><i class="ph ph-drop"></i>מים</span>
+      <span class="card-sub num">יעד: ${s.waterTarget} כוסות</span>
+    </div>
+    <div class="counter-row">
+      <div class="counter-val num">${d.water} <small>/ ${s.waterTarget}</small></div>
+      <div style="display:flex;gap:8px">
+        <button class="step-btn" data-act="water" data-arg="-1"><i class="ph ph-minus"></i></button>
+        <button class="step-btn" data-act="water" data-arg="1"><i class="ph ph-plus"></i></button>
+      </div>
+    </div>
+    <div class="seg-bar">${waterSegs}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title"><i class="ph ph-moon"></i>שינה</span>
+      <span class="card-sub num">יעד: ${s.sleepTarget} שעות</span>
+    </div>
+    <div class="counter-row">
+      <div class="counter-val num">${(d.sleep || 0).toFixed(1)} <small>שעות אתמול</small></div>
+      <div style="display:flex;gap:8px">
+        <button class="step-btn" data-act="sleep" data-arg="-0.5"><i class="ph ph-minus"></i></button>
+        <button class="step-btn" data-act="sleep" data-arg="0.5"><i class="ph ph-plus"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title"><i class="ph ph-footprints"></i>צעדים</span>
+      <span class="card-sub num">${stepsPct}% מהיעד</span>
+    </div>
+    <input type="number" id="steps-input" inputmode="numeric" placeholder="כמה צעדים היום?" value="${d.steps || ''}">
+    <div class="bar"><i style="width:${stepsPct}%"></i></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title"><i class="ph ph-pill"></i>תוספים</span>
+    </div>
+    ${SUPPS.map(sp => `
+    <div class="h-row">
+      <span class="h-ico"><i class="ph ph-pill"></i></span>
+      <span class="h-name">${sp.name}<span class="h-sub">${sp.sub}</span></span>
+      <button class="switch ${d.supps[sp.key] ? 'on' : ''}" data-act="supp" data-arg="${sp.key}" aria-label="${sp.name}"></button>
+    </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title"><i class="ph ph-list-checks"></i>הרגלים</span>
+    </div>
+    ${HABITS.map(h => `
+    <div class="h-row">
+      <span class="h-ico"><i class="ph ${h.icon}"></i></span>
+      <span class="h-name">${h.name}<span class="h-sub">${h.sub}</span></span>
+      <button class="switch ${d.habits[h.key] ? 'on' : ''}" data-act="habit" data-arg="${h.key}" aria-label="${h.name}"></button>
+    </div>`).join('')}
+  </div>`;
+
+  $('#view-habits').innerHTML = html;
+
+  const stepsInput = $('#steps-input');
+  if (stepsInput) {
+    stepsInput.addEventListener('change', () => {
+      day().steps = Math.max(0, parseInt(stepsInput.value || '0', 10));
+      save(); renderHabits(); renderHeader();
+    });
+  }
+}
+
+/* ---------- render: week ---------- */
+function renderWeek() {
+  const s = state.settings;
+  const now = new Date();
+  const tk = todayKey();
+  const dates = weekDates(now);
+
+  /* פס ימי השבוע */
+  let strip = '';
+  let workoutsDone = 0, workoutsScheduledSoFar = 0;
+  for (const dt of dates) {
+    const k = dateKey(dt);
+    const prog = getProgram(dt);
+    const rec = dayRO(k);
+    const isToday = k === tk;
+    const isFuture = dt > now && !isToday;
+    let cls = '', icon = '';
+    if (prog.type === 'rest') { cls = 'rest'; icon = '<i class="ph ph-moon" style="font-size:13px"></i>'; }
+    else if (rec.workoutDone) { cls = 'done'; icon = '<i class="ph ph-check"></i>'; workoutsDone++; if (!isFuture) workoutsScheduledSoFar++; }
+    else if (isFuture) { cls = ''; icon = ''; }
+    else { cls = 'missed'; icon = ''; if (!isToday) workoutsScheduledSoFar++; }
+    strip += `
+    <div class="wday ${isToday ? 'today' : ''}">
+      <span>${DAY_LETTERS[dt.getDay()]}</span>
+      <div class="wday-dot ${cls}">${icon}</div>
+    </div>`;
+  }
+
+  /* היענות שבועית */
+  let calDays = 0, protDays = 0, loggedDays = 0;
+  for (const dt of dates) {
+    if (dt > now) continue;
+    const rec = dayRO(dateKey(dt));
+    if (rec.cal > 0) {
+      loggedDays++;
+      if (rec.cal <= s.calTarget + 50) calDays++;
+      if (rec.prot >= s.proteinTarget * 0.9) protDays++;
+    }
+  }
+
+  /* רצפים */
+  const stTrain = trainingStreak();
+  const stWater = streak(r => r.water >= s.waterTarget);
+  const stSupps = streak(r => r.supps && r.supps.b12 && r.supps.d && r.supps.omega);
+
+  /* משקל */
+  const cw = currentWeight();
+  const lost = Math.max(0, s.startWeight - cw);
+  const total = Math.max(0.1, s.startWeight - s.goalWeight);
+  const wPct = Math.min(100, Math.round(lost / total * 100));
+  const left = Math.max(0, cw - s.goalWeight);
+
+  let spark = '';
+  const pts = state.weights.slice(-10);
+  if (pts.length >= 2) {
+    const vals = pts.map(p => p.kg);
+    const mn = Math.min(...vals), mx = Math.max(...vals);
+    const span = Math.max(0.5, mx - mn);
+    const coords = vals.map((v, i) => {
+      const x = 4 + i / (vals.length - 1) * 122;
+      const y = 36 - ((v - mn) / span) * 30;
+      return [x.toFixed(1), y.toFixed(1)];
+    });
+    const last = coords[coords.length - 1];
+    spark = `<svg class="spark" viewBox="0 0 130 42">
+      <polyline points="${coords.map(c => c.join(',')).join(' ')}"></polyline>
+      <circle cx="${last[0]}" cy="${last[1]}" r="3"></circle>
+    </svg>`;
+  }
+
+  const todayWeight = state.weights.find(w => w.date === tk);
+
+  let html = `
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title"><i class="ph ph-calendar-check"></i>השבוע שלי</span>
+      <span class="card-sub num">${workoutsDone}/5 אימונים</span>
+    </div>
+    <div class="week-strip">${strip}</div>
+  </div>
+
+  <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+    <div class="tile ${calDays >= loggedDays && loggedDays > 0 ? 'lit' : ''}">
+      <div class="t-val num">${calDays}/${loggedDays || 0}</div>
+      <div class="t-lab">ימים בתקציב הקלוריות</div>
+    </div>
+    <div class="tile ${protDays >= loggedDays && loggedDays > 0 ? 'lit' : ''}">
+      <div class="t-val num">${protDays}/${loggedDays || 0}</div>
+      <div class="t-lab">ימים שסגרו חלבון</div>
+    </div>
+  </div>
+
+  <div class="sec-title">רצפים</div>
+  <div class="streak-row">
+    <div class="streak-chip"><b class="num">${stTrain}</b><span>אימונים ברצף</span></div>
+    <div class="streak-chip"><b class="num">${stWater}</b><span>ימי מים מלאים</span></div>
+    <div class="streak-chip"><b class="num">${stSupps}</b><span>ימי תוספים</span></div>
+  </div>
+
+  <div class="sec-title">הדרך ל-${s.goalWeight} ק"ג</div>
+  <div class="card">
+    <div class="weight-flex">
+      <div>
+        <div class="weight-now num">${cw.toFixed(1)} <small>ק"ג</small></div>
+        <div class="hint num">${left > 0 ? 'נשארו ' + left.toFixed(1) + ' ק"ג ליעד' : 'הגעת ליעד. כל הכבוד!'}</div>
+      </div>
+      ${spark}
+    </div>
+    <div class="bar"><i style="width:${wPct}%"></i></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px">
+      <span class="hint num">${s.startWeight.toFixed(0)}</span>
+      <span class="hint num">${s.goalWeight.toFixed(0)}</span>
+    </div>
+    <div class="weight-add">
+      <input type="number" id="weight-input" step="0.1" inputmode="decimal" placeholder="שקילה של היום (ק&quot;ג)" value="${todayWeight ? todayWeight.kg : ''}">
+      <button class="btn btn-acc" data-act="save-weight">שמירה</button>
+    </div>
+  </div>`;
+
+  $('#view-week').innerHTML = html;
+}
+
+/* ---------- render all ---------- */
+function render() {
+  renderHeader();
+  if (activeTab === 'today') renderToday();
+  if (activeTab === 'food') renderFood();
+  if (activeTab === 'habits') renderHabits();
+  if (activeTab === 'week') renderWeek();
+}
+
+/* ---------- tabs ---------- */
+const TAB_ICONS = { today: 'ph-barbell', food: 'ph-fork-knife', habits: 'ph-list-checks', week: 'ph-chart-line-up' };
+function showTab(name) {
+  activeTab = name;
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  $('#view-' + name).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    const on = b.dataset.arg === name;
+    b.classList.toggle('active', on);
+    const i = b.querySelector('i');
+    i.className = (on ? 'ph-fill ' : 'ph ') + TAB_ICONS[b.dataset.arg];
+  });
+  window.scrollTo({ top: 0 });
+  render();
+}
+
+/* ---------- settings ---------- */
+function openSettings() {
+  const s = state.settings;
+  $('#s-name').value = s.name;
+  $('#s-cal').value = s.calTarget;
+  $('#s-prot').value = s.proteinTarget;
+  $('#s-water').value = s.waterTarget;
+  $('#s-steps').value = s.stepsTarget;
+  $('#s-sleep').value = s.sleepTarget;
+  $('#s-goalw').value = s.goalWeight;
+  $('#s-startw').value = s.startWeight;
+  $('#veil').classList.add('open');
+  $('#sheet').classList.add('open');
+}
+function closeSettings() {
+  $('#veil').classList.remove('open');
+  $('#sheet').classList.remove('open');
+}
+function saveSettings() {
+  const s = state.settings;
+  s.name = $('#s-name').value.trim() || s.name;
+  s.calTarget = Math.max(1200, parseInt($('#s-cal').value, 10) || s.calTarget);
+  s.proteinTarget = Math.max(40, parseInt($('#s-prot').value, 10) || s.proteinTarget);
+  s.waterTarget = Math.min(20, Math.max(4, parseInt($('#s-water').value, 10) || s.waterTarget));
+  s.stepsTarget = Math.max(1000, parseInt($('#s-steps').value, 10) || s.stepsTarget);
+  s.sleepTarget = Math.max(4, parseFloat($('#s-sleep').value) || s.sleepTarget);
+  s.goalWeight = parseFloat($('#s-goalw').value) || s.goalWeight;
+  s.startWeight = parseFloat($('#s-startw').value) || s.startWeight;
+  save(); closeSettings(); render();
+  toast('היעדים עודכנו');
+}
+
+/* ---------- actions ---------- */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const act = el.dataset.act;
+  const arg = el.dataset.arg;
+  const d = day();
+  const s = state.settings;
+
+  switch (act) {
+    case 'tab': showTab(arg); break;
+    case 'open-settings': openSettings(); break;
+    case 'close-settings': closeSettings(); break;
+    case 'save-settings': saveSettings(); break;
+
+    case 'toggle-ex': {
+      const i = parseInt(arg, 10);
+      d.exDone[i] = !d.exDone[i];
+      const prog = getProgram(new Date());
+      if (prog.ex.length && d.exDone.every(Boolean) && !d.workoutDone) {
+        d.workoutDone = true;
+        toast('כל התרגילים הושלמו. אימון נסגר');
+      }
+      save(); renderToday(); break;
+    }
+    case 'finish-workout':
+      d.workoutDone = true;
+      d.exDone = d.exDone.map(() => true);
+      save(); renderToday();
+      toast('האימון נרשם. עבודה יפה');
+      break;
+    case 'undo-workout':
+      d.workoutDone = false;
+      save(); renderToday(); break;
+
+    case 'gen-plan': generatePlan(); break;
+    case 'swap': replaceMeal(arg); break;
+    case 'eat': toggleEaten(arg); break;
+
+    case 'quick': {
+      const q = QUICK_ADDS[parseInt(arg, 10)];
+      d.cal += q.kcal; d.prot += q.prot;
+      save(); render();
+      toast(q.name + ' נוסף');
+      break;
+    }
+    case 'custom-add': {
+      const c = parseInt($('#add-cal').value, 10) || 0;
+      const p = parseInt($('#add-prot').value, 10) || 0;
+      if (c <= 0 && p <= 0) { toast('הזן ערך להוספה'); break; }
+      d.cal += Math.max(0, c); d.prot += Math.max(0, p);
+      save(); render();
+      toast('נוסף ליומן');
+      break;
+    }
+    case 'reset-food':
+      d.cal = 0; d.prot = 0;
+      if (d.meals) { d.meals.lunchEaten = false; d.meals.dinnerEaten = false; }
+      save(); render();
+      toast('התזונה של היום אופסה');
+      break;
+
+    case 'water':
+      d.water = Math.max(0, d.water + parseInt(arg, 10));
+      save(); renderHabits(); break;
+    case 'sleep':
+      d.sleep = Math.min(14, Math.max(0, (d.sleep || 0) + parseFloat(arg)));
+      save(); renderHabits(); break;
+    case 'supp':
+      d.supps[arg] = !d.supps[arg];
+      save(); renderHabits(); break;
+    case 'habit':
+      d.habits[arg] = !d.habits[arg];
+      save(); renderHabits(); break;
+
+    case 'save-weight': {
+      const v = parseFloat($('#weight-input').value);
+      if (!v || v < 30 || v > 200) { toast('הזן משקל תקין'); break; }
+      const tk = todayKey();
+      const existing = state.weights.find(w => w.date === tk);
+      if (existing) existing.kg = v;
+      else state.weights.push({ date: tk, kg: v });
+      state.weights.sort((a, b) => a.date < b.date ? -1 : 1);
+      save(); render();
+      toast('המשקל נשמר');
+      break;
+    }
+
+    case 'reset-day':
+      if (confirm('לאפס את כל הנתונים של היום?')) {
+        delete state.days[todayKey()];
+        save(); closeSettings(); render();
+        toast('היום אופס');
+      }
+      break;
+    case 'reset-all':
+      if (confirm('לאפס את כל ההיסטוריה והנתונים? אין דרך חזרה.')) {
+        localStorage.removeItem(KEY);
+        state = load();
+        closeSettings(); render();
+        toast('הכל אופס');
+      }
+      break;
+  }
+});
+
+/* ---------- init ---------- */
+render();
+
+/* PWA: רישום service worker להתקנה ועבודה אופליין */
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
