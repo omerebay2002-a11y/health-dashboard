@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
 <style>
@@ -34,6 +34,7 @@
   --ring1:#B9E94E;
   --ring2:#86C23A;
   --ring3:#5E8F2C;
+  --font-mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
   --r-card:20px;
   --r-ctl:14px;
 }
@@ -55,7 +56,7 @@ body{
 ::selection{background:var(--acc);color:var(--on-acc)}
 input,button,textarea{font-family:inherit;color:inherit}
 button{cursor:pointer;border:none;background:none}
-.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 
 /* ====== shell ====== */
 .shell{position:relative;z-index:1;max-width:620px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
@@ -134,11 +135,11 @@ header.app{
   border-right:2px solid var(--acc);padding-right:10px;
 }
 .ex-list{margin-top:16px;display:flex;flex-direction:column}
-.ex-row{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 2px;border-top:1px solid var(--line);
-  transition:opacity .2s ease;width:100%;text-align:right;
-}
+.ex-row{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);transition:opacity .2s ease}
+.ex-toggle{display:flex;align-items:center;gap:12px;flex:1;min-width:0;padding:12px 2px;text-align:right}
+.ex-info{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--tx-3);font-size:17px;transition:color .15s ease,transform .12s ease}
+.ex-info:hover{color:var(--acc)}
+.ex-info:active{transform:scale(.9)}
 .ex-row.done .ex-name{color:var(--tx-3);text-decoration:line-through;text-decoration-color:var(--tx-3)}
 .ex-check{
   flex:none;width:26px;height:26px;border-radius:999px;
@@ -465,6 +466,38 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .split-tally i{color:var(--acc);font-size:15px}
 .split-tally b{color:var(--tx)}
 .chal-seq{font-size:13.5px;font-weight:600;line-height:1.6;color:var(--tx)}
+/* פס נתונים אתלטי (ללא כרטיס, קווים דקים מפרידים) */
+.statband{display:flex;margin:0 2px 12px;padding:4px 0}
+.sb{flex:1;text-align:center;padding:4px 2px;border-inline-start:1px solid var(--line);transition:opacity .15s ease}
+.sb:first-child{border-inline-start:none}
+.sb:active{opacity:.55}
+.sb b{display:block;font-size:25px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--tx)}
+.sb span{display:block;font-size:10.5px;color:var(--tx-3);font-weight:600;margin-top:4px}
+/* מוטיב תווית מקטע: ריבוע ליים קטן */
+.sec-title>span{position:relative;padding-right:13px}
+.sec-title>span::before{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:6px;height:6px;background:var(--acc);border-radius:2px}
+/* מדריך טכניקה (sheet) */
+.tip-body{font-size:14px;line-height:1.65;color:var(--tx);background:var(--card-2);border-radius:14px;padding:15px 16px}
+/* מצב אימון מודרך */
+.ws{position:fixed;inset:0;z-index:62;background:var(--bg);display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));animation:viewIn .3s cubic-bezier(.16,1,.3,1)}
+.ws[hidden]{display:none}
+.ws-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ws-x{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);color:var(--tx-2);font-size:20px}
+.ws-prog{font-size:14px;font-weight:700;color:var(--tx-2)}
+.ws-body{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.ws-phase-lab{font-size:12px;font-weight:700;color:var(--acc);letter-spacing:.1em;margin-bottom:10px}
+.ws-exname{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+.ws-spec{font-size:16px;color:var(--tx-2);font-weight:700;margin-top:10px}
+.ws-tip{display:flex;gap:9px;text-align:right;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:22px auto 0;max-width:430px;font-size:13.5px;line-height:1.55;color:var(--tx-2)}
+.ws-tip i{color:var(--acc);font-size:18px;flex:none;margin-top:1px}
+.ws-actions{margin:28px auto 0;display:flex;flex-direction:column;gap:10px;align-items:center;max-width:430px;width:100%}
+.ws-actions .btn{width:100%}
+.ws-timer{position:relative;width:230px;height:230px;margin:6px auto 4px}
+.ws-timer svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ws-ring{transition:stroke-dashoffset 1s linear}
+.ws-count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:74px;font-weight:800;letter-spacing:-.04em}
+.ws-next{font-size:14px;color:var(--tx-2);font-weight:600;margin-top:18px}
+.ws-next b{color:var(--tx)}
 /* כניסת כרטיסים מדורגת */
 @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 /* מחוון טאב פעיל */
@@ -618,6 +651,26 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
   </div>
 </div>
 
+<!-- technique guide sheet -->
+<div class="sheet" id="sheet-tip">
+  <div class="sheet-grip"></div>
+  <h2 id="tip-name"></h2>
+  <p class="sub" id="tip-spec"></p>
+  <div class="tip-body" id="tip-body"></div>
+  <div class="sheet-foot">
+    <button class="btn btn-soft btn-wide" data-act="close-sheets">סגירה</button>
+  </div>
+</div>
+
+<!-- guided workout session -->
+<div class="ws" id="ws" hidden>
+  <div class="ws-top">
+    <button class="ws-x" data-act="ws-close" aria-label="סגירת האימון"><i class="ph ph-x"></i></button>
+    <div class="ws-prog" id="ws-prog"></div>
+  </div>
+  <div class="ws-body" id="ws-body"></div>
+</div>
+
 <!-- onboarding -->
 <div class="onb" id="onb" hidden>
   <div class="onb-brand"><i class="ph-fill ph-barbell"></i></div>
@@ -704,15 +757,15 @@ const W_PUSH = {
   type: 'strength', split: 'עליון · דחיפה', title: 'כוח · דחיפה', icon: 'ph-barbell',
   note: 'חימום פלג גוף עליון לפני הכול. לדחוק כל סט קרוב לכשל, בטכניקה נקייה ובטווח מלא.',
   ex: [
-    { n: 'שכיבות סמיכה בעמידת ידיים על הקיר', d: '3 × 5-8 · מנוחה 2׳' },
-    { n: 'מתח ארצ׳ר', d: '4 × 2-3 לכל יד · מנוחה 2׳' },
-    { n: 'אייסקרים מייקרס', d: '5 × 2-4 · מנוחה 1.5׳' },
-    { n: 'השענות לפלאנצ׳', d: '10-15 שנ׳', group: 'סופרסט · 3 סבבים' },
-    { n: 'הרמות דרגון פלאג', d: 'עד 10 · מנוחה 1.5׳', group: 'סופרסט · 3 סבבים' },
-    { n: 'שכיבות סמיכה בהשענה קדימה', d: '8-12', group: 'סופרסט · 4 סבבים' },
-    { n: 'מתח רחב', d: '8-12 · מנוחה 2׳', group: 'סופרסט · 4 סבבים' },
-    { n: 'מקבילים על מתח', d: '3 × עד 20 · מנוחה 2׳' },
-    { n: 'אל סיט על טבעות (בונוס)', d: 'מקסימום החזקה' }
+    { n: 'שכיבות סמיכה בעמידת ידיים על הקיר', d: '3 × 5-8 · מנוחה 2׳', tip: 'פנים לקיר, ידיים מעט רחבות מהכתפיים. ליבה אסופה וישבן מכווץ. יורדים בשליטה עד שהראש כמעט נוגע ברצפה ודוחפים חזק כלפי מעלה בלי לקמר את הגב.' },
+    { n: 'מתח ארצ׳ר', d: '4 × 2-3 לכל יד · מנוחה 2׳', tip: 'אחיזה רחבה. מושכים את הגוף לכיוון יד אחת בזמן שהיד השנייה נשארת כמעט ישרה ומלווה. שכמות נמשכות מטה, בלי נדנוד של הגוף.' },
+    { n: 'אייסקרים מייקרס', d: '5 × 2-4 · מנוחה 1.5׳', tip: 'מתחילים מסיום מתח (חזה אל המוט). מטים את הגוף קדימה ומטה בשליטה עד אופקי, ואז חוזרים למעלה. שכמות אסופות לכל אורך התנועה.' },
+    { n: 'השענות לפלאנצ׳', d: '10-15 שנ׳', group: 'סופרסט · 3 סבבים', tip: 'כפות ידיים על הרצפה, אצבעות פונות לאחור. נוטים את הכתפיים קדימה מעבר לפרקי הידיים, גוף בקו ישר מהראש לעקבים. מחזיקים יציב.' },
+    { n: 'הרמות דרגון פלאג', d: 'עד 10 · מנוחה 1.5׳', group: 'סופרסט · 3 סבבים', tip: 'נאחזים בעוגן מאחורי הראש. מרימים את כל הגוף כמו מוט ישר, מורידים לאט מאוד בלי לקמר את הגב התחתון.' },
+    { n: 'שכיבות סמיכה בהשענה קדימה', d: '8-12', group: 'סופרסט · 4 סבבים', tip: 'כפות ידיים נמוך ליד המותניים, מטים את הכתפיים קדימה מעבר לידיים. מרפקים צמודים לגוף, ירידה איטית.' },
+    { n: 'מתח רחב', d: '8-12 · מנוחה 2׳', group: 'סופרסט · 4 סבבים', tip: 'אחיזה רחבה מהכתפיים, כפות פונות החוצה. מובילים עם המרפקים מטה ומושכים את החזה אל המוט בלי תנופה.' },
+    { n: 'מקבילים על מתח', d: '3 × עד 20 · מנוחה 2׳', tip: 'גוף מעט נוטה קדימה, כתפיים מושפלות. יורדים עד 90 מעלות במרפק ודוחפים עד נעילה מלאה למעלה.' },
+    { n: 'אל סיט על טבעות (בונוס)', d: 'מקסימום החזקה', tip: 'תלויים על הטבעות, שכמות מושפלות. מרימים רגליים ישרות קדימה למקביל לרצפה ונועלים את הליבה. מחזיקים כמה שאפשר.' }
   ]
 };
 
@@ -720,14 +773,14 @@ const W_PULL = {
   type: 'strength', split: 'עליון · משיכה', title: 'כוח · משיכה', icon: 'ph-barbell',
   note: 'חימום פלג גוף עליון. דגש על משיכה נקייה ושליטה לאורך כל הטווח.',
   ex: [
-    { n: 'אייסקרים מייקרס', d: '2 × מקסימום נקי · מנוחה 2׳' },
-    { n: 'שכיבות סמיכה בעמידת ידיים על הקיר', d: '2 × מקסימום · מנוחה 3׳' },
-    { n: 'מתח ארצ׳ר', d: '3 × מקסימום נקי לכל יד · מנוחה 1.5׳' },
-    { n: 'מתח צמוד', d: '8-12', group: 'סופרסט · 4 סבבים' },
-    { n: 'מקבילים עם רגליים בטאק', d: '8-12 · מנוחה 2׳', group: 'סופרסט · 4 סבבים' },
-    { n: 'מתח סופינציה', d: '8-12', group: 'סופרסט · 3 סבבים' },
-    { n: 'פשיטות מרפקים', d: 'עד 20 · מנוחה 2׳', group: 'סופרסט · 3 סבבים' },
-    { n: 'הרמות רגליים על מקבילים', d: '3 × מקסימום · מנוחה 3׳' }
+    { n: 'אייסקרים מייקרס', d: '2 × מקסימום נקי · מנוחה 2׳', tip: 'מתחילים מסיום מתח, מטים את הגוף קדימה ומטה בשליטה עד אופקי וחוזרים. עוצרים את הסט כשהטכניקה מתחילה להישבר.' },
+    { n: 'שכיבות סמיכה בעמידת ידיים על הקיר', d: '2 × מקסימום · מנוחה 3׳', tip: 'פנים לקיר, ליבה אסופה. יורדים עד שהראש כמעט נוגע ודוחפים חזק. עוצרים כשהטווח מתקצר.' },
+    { n: 'מתח ארצ׳ר', d: '3 × מקסימום נקי לכל יד · מנוחה 1.5׳', tip: 'מושכים לצד אחד כשהיד השנייה ישרה ומלווה. גוף יציב, בלי תנופה.' },
+    { n: 'מתח צמוד', d: '8-12', group: 'סופרסט · 4 סבבים', tip: 'אחיזה צרה, ידיים קרובות. מושכים את החזה התחתון אל המוט, מרפקים צמודים לגוף.' },
+    { n: 'מקבילים עם רגליים בטאק', d: '8-12 · מנוחה 2׳', group: 'סופרסט · 4 סבבים', tip: 'ברכיים אסופות לחזה לאיזון. יורדים בשליטה ל-90 מעלות במרפק ודוחפים עד נעילה.' },
+    { n: 'מתח סופינציה', d: '8-12', group: 'סופרסט · 3 סבבים', tip: 'כפות פונות אליך, ברוחב כתפיים. מושכים עם הגב והביצפס עד שהסנטר עובר את המוט, מורידים לאט.' },
+    { n: 'פשיטות מרפקים', d: 'עד 20 · מנוחה 2׳', group: 'סופרסט · 3 סבבים', tip: 'אחיזה על מוט נמוך, גוף ישר. כופפים רק את המרפקים ומורידים את המצח לכיוון המוט, ואז פושטים בכוח הטריצפס.' },
+    { n: 'הרמות רגליים על מקבילים', d: '3 × מקסימום · מנוחה 3׳', tip: 'נשענים על האמות, גב צמוד למשענת. מרימים רגליים ישרות עד אופקי בלי להתנדנד, מורידים לאט.' }
   ]
 };
 
@@ -735,12 +788,12 @@ const W_LEGS = {
   type: 'strength', split: 'רגליים', title: 'כוח · רגליים', icon: 'ph-barbell',
   note: 'חימום פלג גוף תחתון ורוטינת הכנה לפי הסרטון. עומק נוח ושליטה בכל חזרה.',
   ex: [
-    { n: 'פיסטול סקוואט', d: '3 × עד 15 לכל רגל · מנוחה 1.5׳' },
-    { n: 'ארצ׳ר סקוואט', d: '3 × 15-20 לכל רגל · מנוחה 1.5׳' },
-    { n: 'החלפות מכרעיים בקפיצה', d: '20', group: 'סופרסט · 2 סבבים' },
-    { n: 'הרמות תאומים על רגל אחת', d: '20 לכל רגל · מנוחה 2׳', group: 'סופרסט · 2 סבבים' },
-    { n: 'פשיטת ברכיים במשקל גוף', d: '2 × 12-15 · מנוחה 1׳' },
-    { n: 'פלאנק למקרבים', d: '2 × 30 שנ׳ החזקה · מנוחה 1׳' }
+    { n: 'פיסטול סקוואט', d: '3 × עד 15 לכל רגל · מנוחה 1.5׳', tip: 'רגל אחת מורמת ישרה קדימה. יורדים על הרגל השנייה עד הסוף בשליטה, עקב נשאר על הרצפה, ועולים בכוח בלי קריסה פנימה של הברך.' },
+    { n: 'ארצ׳ר סקוואט', d: '3 × 15-20 לכל רגל · מנוחה 1.5׳', tip: 'עמידה רחבה. מעבירים משקל לצד אחד ויורדים עמוק כשהרגל השנייה נשארת ישרה, ומחליפים צד.' },
+    { n: 'החלפות מכרעיים בקפיצה', d: '20', group: 'סופרסט · 2 סבבים', tip: 'מכרעה עמוקה, קפיצה נפיצה והחלפת רגליים באוויר, נחיתה רכה ישר למכרעה הבאה. ברך אחורית כמעט נוגעת.' },
+    { n: 'הרמות תאומים על רגל אחת', d: '20 לכל רגל · מנוחה 2׳', group: 'סופרסט · 2 סבבים', tip: 'על רגל אחת, עולים על קצות האצבעות עד הסוף ומורידים לאט מתחת לגובה הרצפה אם יש מדרגה.' },
+    { n: 'פשיטת ברכיים במשקל גוף', d: '2 × 12-15 · מנוחה 1׳', tip: 'ברכיים על משטח רך, קו ישר מהברך לכתף. נוטים אחורה בשליטה כמה שאפשר ומחזירים את הגוף בכוח הירך האחורי.' },
+    { n: 'פלאנק למקרבים', d: '2 × 30 שנ׳ החזקה · מנוחה 1׳', tip: 'פלאנק צד, מרפק מתחת לכתף, מותן גבוה וגוף בקו ישר. מחזיקים יציב בלי לצנוח.' }
   ]
 };
 
@@ -1116,6 +1169,148 @@ function celebrate() {
   requestAnimationFrame(tick);
 }
 
+/* ---------- מצב אימון מודרך + טיימר מנוחה ---------- */
+let ws = null;
+let actx = null;
+
+function parseRest(ex) {
+  const t = ex.d || '';
+  if (/דקה וחצי/.test(t)) return 90;
+  let m = t.match(/מנוחה\s*([\d.]+)\s*[׳']/);
+  if (m) return Math.round(parseFloat(m[1]) * 60);
+  m = t.match(/([\d.]+)\s*דק/);
+  if (m) return Math.round(parseFloat(m[1]) * 60);
+  return 90;
+}
+
+function audioReady() {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+  } catch (e) { /* אין אודיו, לא קריטי */ }
+}
+function beep() {
+  if (!actx) return;
+  try {
+    [0, 0.18].forEach((delay, k) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = k === 0 ? 740 : 988;
+      o.connect(g); g.connect(actx.destination);
+      const t0 = actx.currentTime + delay;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.32, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
+      o.start(t0); o.stop(t0 + 0.18);
+    });
+  } catch (e) { /* התעלם */ }
+}
+function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+
+const WS_R = 108, WS_C = 2 * Math.PI * WS_R;
+
+function startSession() {
+  const prog = getProgram(new Date());
+  if (prog.type === 'rest' || !prog.ex.length) { toast('היום אין אימון'); return; }
+  audioReady();
+  const d = day();
+  if (d.exDone.length !== prog.ex.length) d.exDone = prog.ex.map(() => false);
+  ws = { prog, i: 0, phase: 'work', t: 0, total: 0, timer: null };
+  $('#ws').hidden = false;
+  wsRender();
+}
+function wsRender() {
+  const { prog, i, phase } = ws;
+  const ex = prog.ex[i];
+  const last = i === prog.ex.length - 1;
+  $('#ws-prog').innerHTML = `<span class="num">${i + 1}</span> / <span class="num">${prog.ex.length}</span>`;
+  if (phase === 'work') {
+    $('#ws-body').innerHTML = `
+      <div class="ws-phase-lab">תרגיל נוכחי</div>
+      <div class="ws-exname">${esc(ex.n)}</div>
+      <div class="ws-spec num">${esc(ex.d)}</div>
+      ${ex.tip ? `<div class="ws-tip"><i class="ph ph-seal-check"></i><span>${esc(ex.tip)}</span></div>` : ''}
+      <div class="ws-actions">
+        <button class="btn btn-acc btn-wide" data-act="ws-done">${last ? 'סיימתי את האימון' : 'סיימתי, למנוחה'}</button>
+        ${last ? '' : `<button class="btn-text" data-act="ws-skip-ex">דלג בלי מנוחה</button>`}
+      </div>`;
+  } else {
+    const next = prog.ex[i + 1];
+    $('#ws-body').innerHTML = `
+      <div class="ws-phase-lab">מנוחה</div>
+      <div class="ws-timer">
+        <svg viewBox="0 0 240 240">
+          <circle cx="120" cy="120" r="${WS_R}" fill="none" stroke="var(--card-2)" stroke-width="10"></circle>
+          <circle class="ws-ring" id="ws-ring" cx="120" cy="120" r="${WS_R}" fill="none" stroke="var(--acc)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${WS_C.toFixed(1)}" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="ws-count num" id="ws-count">${ws.t}</div>
+      </div>
+      <div class="ws-next">הבא: <b>${esc(next.n)}</b></div>
+      <div class="ws-actions">
+        <button class="btn btn-soft" data-act="ws-add">+15 שניות</button>
+        <button class="btn btn-acc" data-act="ws-skip-rest">דלג לתרגיל הבא</button>
+      </div>`;
+    wsRing();
+  }
+}
+function wsRing() {
+  const r = $('#ws-ring');
+  if (!r || !ws) return;
+  const pct = ws.total ? ws.t / ws.total : 0;
+  r.style.strokeDashoffset = (WS_C - WS_C * pct).toFixed(1);
+}
+function wsDone() {
+  if (!ws) return;
+  const { prog, i } = ws;
+  const d = day();
+  d.exDone[i] = true; save();
+  if (i === prog.ex.length - 1) { wsFinish(); return; }
+  ws.phase = 'rest';
+  ws.total = parseRest(prog.ex[i]);
+  ws.t = ws.total;
+  wsRender();
+  ws.timer = setInterval(wsTick, 1000);
+}
+function wsTick() {
+  ws.t--;
+  const c = $('#ws-count'); if (c) c.textContent = Math.max(0, ws.t);
+  wsRing();
+  if (ws.t <= 0) {
+    clearInterval(ws.timer); ws.timer = null;
+    beep(); buzz([130, 70, 130]);
+    wsAdvance();
+  }
+}
+function wsAdvance() { if (!ws) return; ws.i++; ws.phase = 'work'; wsRender(); }
+function wsSkipRest() { if (!ws) return; if (ws.timer) { clearInterval(ws.timer); ws.timer = null; } wsAdvance(); }
+function wsSkipEx() {
+  if (!ws) return;
+  const d = day(); d.exDone[ws.i] = true; save();
+  if (ws.i === ws.prog.ex.length - 1) { wsFinish(); return; }
+  ws.i++; ws.phase = 'work'; wsRender();
+}
+function wsAdd() {
+  if (!ws) return;
+  ws.t += 15; ws.total = Math.max(ws.total, ws.t);
+  const c = $('#ws-count'); if (c) c.textContent = ws.t;
+  wsRing();
+}
+function wsClose() {
+  if (ws && ws.timer) clearInterval(ws.timer);
+  $('#ws').hidden = true; $('#ws-body').innerHTML = ''; ws = null;
+  render();
+}
+function wsFinish() {
+  if (ws && ws.timer) clearInterval(ws.timer);
+  const d = day();
+  d.workoutDone = true;
+  d.exDone = d.exDone.map(() => true);
+  save();
+  $('#ws').hidden = true; $('#ws-body').innerHTML = ''; ws = null;
+  render();
+  toast('האימון הושלם. עבודה יפה');
+  checkDayClosed();
+}
+
 /* ---------- render: header ---------- */
 function renderHeader() {
   const s = state.settings;
@@ -1144,13 +1339,16 @@ function concentricRings(vals) {
 
 function exRowHTML(ex, idx, done) {
   return `
-  <button class="ex-row ${done ? 'done' : ''}" data-act="toggle-ex" data-arg="${idx}">
-    <span class="ex-check"><i class="ph ph-check"></i></span>
-    <span class="ex-main">
-      <span class="ex-name">${esc(ex.n)}</span>
-      <span class="ex-spec num">${esc(ex.d)}</span>
-    </span>
-  </button>`;
+  <div class="ex-row ${done ? 'done' : ''}">
+    <button class="ex-toggle" data-act="toggle-ex" data-arg="${idx}">
+      <span class="ex-check"><i class="ph ph-check"></i></span>
+      <span class="ex-main">
+        <span class="ex-name">${esc(ex.n)}</span>
+        <span class="ex-spec num">${esc(ex.d)}</span>
+      </span>
+    </button>
+    ${ex.tip ? `<button class="ex-info" data-act="tip" data-arg="${idx}" aria-label="מדריך טכניקה"><i class="ph ph-info"></i></button>` : ''}
+  </div>`;
 }
 /* רשימת תרגילים עם קיבוץ סופרסטים סמוכים */
 function exercisesHTML(prog, d) {
@@ -1216,7 +1414,8 @@ function renderToday() {
       ${d.workoutDone
         ? `<div class="wk-done-banner"><i class="ph ph-check-circle"></i>האימון הושלם. עבודה יפה.</div>
            <button class="btn-text" data-act="undo-workout" style="margin-top:6px">ביטול סימון</button>`
-        : `<button class="btn btn-acc btn-wide" data-act="finish-workout" style="margin-top:16px">סיום אימון</button>`}
+        : `<button class="btn btn-acc btn-wide" data-act="start-session" style="margin-top:16px"><i class="ph ph-play-circle"></i>התחל אימון מודרך</button>
+           <button class="btn-text" data-act="finish-workout" style="margin-top:6px;width:100%;justify-content:center">סמן כהושלם בלי טיימר</button>`}
     </div>`;
   }
 
@@ -1255,7 +1454,21 @@ function renderToday() {
     </div>
   </div>`;
 
-  $('#view-today').innerHTML = nudge + hero + workout;
+  /* פס נתונים אתלטי: רצף, אימוני השבוע, ק"ג ליעד */
+  let wkDone = 0, wkTotal = 0;
+  for (const dt of weekDates()) {
+    const p = getProgram(dt);
+    if (p.type !== 'rest') { wkTotal++; if (dayRO(dateKey(dt)).workoutDone) wkDone++; }
+  }
+  const toGo = Math.max(0, currentWeight() - s.goalWeight);
+  const band = `
+  <div class="statband">
+    <button class="sb" data-act="tab" data-arg="week"><b class="num">${trainingStreak()}</b><span>רצף ימים</span></button>
+    <button class="sb" data-act="tab" data-arg="week"><b class="num">${wkDone}/${wkTotal}</b><span>אימוני השבוע</span></button>
+    <button class="sb" data-act="tab" data-arg="week"><b class="num">${toGo.toFixed(1)}</b><span>ק"ג ליעד</span></button>
+  </div>`;
+
+  $('#view-today').innerHTML = nudge + hero + band + workout;
   animateNumber($('#day-score'), lastDayScore, score);
   lastDayScore = score;
 }
@@ -1875,6 +2088,24 @@ document.addEventListener('click', e => {
       d.workoutDone = false;
       save(); renderToday(); break;
     case 'edit-workout': openWorkoutEditor(); break;
+
+    /* מצב אימון מודרך */
+    case 'start-session': startSession(); break;
+    case 'ws-done': wsDone(); break;
+    case 'ws-skip-ex': wsSkipEx(); break;
+    case 'ws-skip-rest': wsSkipRest(); break;
+    case 'ws-add': wsAdd(); break;
+    case 'ws-close': wsClose(); break;
+    case 'tip': {
+      const prog = getProgram(new Date());
+      const ex = prog.ex[parseInt(arg, 10)];
+      if (!ex) break;
+      $('#tip-name').textContent = ex.n;
+      $('#tip-spec').textContent = ex.d;
+      $('#tip-body').textContent = ex.tip || 'אין הסבר זמין לתרגיל הזה.';
+      openSheet('sheet-tip');
+      break;
+    }
     case 'we-add':
       readEditorInputs(); editBuffer.ex.push({ n: '', d: '' }); renderWorkoutEditor(); break;
     case 'we-del':
