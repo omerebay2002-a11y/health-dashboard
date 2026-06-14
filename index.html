@@ -31,6 +31,9 @@
   --acc-deep:#94C72E;
   --on-acc:#16200A;
   --warn:#E2B25E;
+  --ring1:#B9E94E;
+  --ring2:#86C23A;
+  --ring3:#5E8F2C;
   --r-card:20px;
   --r-ctl:14px;
 }
@@ -144,8 +147,12 @@ header.app{
   transition:background .18s ease,border-color .18s ease,transform .18s ease;
 }
 .ex-row.done .ex-check{background:var(--acc);border-color:var(--acc);color:var(--on-acc);transform:scale(1.05)}
-.ex-name{font-size:14.5px;font-weight:500;flex:1}
-.ex-spec{font-size:13px;color:var(--tx-2);font-weight:600}
+.ex-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:right}
+.ex-name{font-size:14.5px;font-weight:600}
+.ex-spec{font-size:12px;color:var(--tx-3);font-weight:600}
+.ss-group{border-right:2px solid rgba(185,233,78,.28);padding-right:11px;margin-right:2px}
+.ss-tag{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--acc);padding:13px 0 1px}
+.ss-group .ex-row:first-of-type{border-top:none}
 .wk-progress{height:5px;background:var(--card-2);border-radius:99px;margin-top:14px;overflow:hidden}
 .wk-progress i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .4s cubic-bezier(.16,1,.3,1)}
 .wk-done-banner{
@@ -443,6 +450,21 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .p-lab{flex:1;font-size:13px;font-weight:600;color:var(--tx-2)}
 .p-state{font-size:12.5px;font-weight:700;color:var(--tx-3)}
 .p-state.done{color:var(--acc);font-size:16px;display:flex;align-items:center}
+.cr-fg{transition:stroke-dashoffset .9s cubic-bezier(.16,1,.3,1)}
+.hero-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--tx-2);background:var(--card-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;margin:3px 0 12px}
+.hero-chip.done{color:var(--acc);border-color:rgba(185,233,78,.25)}
+.hero-legend{display:grid;gap:9px}
+.lg-row{display:flex;align-items:center;gap:9px;width:100%;text-align:right;transition:opacity .15s ease}
+.lg-row:active{opacity:.55}
+.lg-dot{flex:none;width:9px;height:9px;border-radius:99px}
+.lg-lab{flex:none;font-size:13px;font-weight:600;color:var(--tx-2)}
+.lg-val{flex:1;text-align:left;font-size:12.5px;font-weight:700;color:var(--tx-3)}
+/* week: ספירת כוח/אירובי + אתגר */
+.split-tally{display:flex;gap:18px;justify-content:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.split-tally span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--tx-2)}
+.split-tally i{color:var(--acc);font-size:15px}
+.split-tally b{color:var(--tx)}
+.chal-seq{font-size:13.5px;font-weight:600;line-height:1.6;color:var(--tx)}
 /* כניסת כרטיסים מדורגת */
 @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 /* מחוון טאב פעיל */
@@ -674,88 +696,101 @@ const DEFAULT_SETTINGS = {
   onboarded: false
 };
 
-/* ---------- תוכנית אימונים שבועית (ברירת מחדל) ----------
-   3 כוח + 2 אירובי, ויום שישי מתחלף כל שבוע
-   (כוח/אירובי לסירוגין) כדי לשמור על יחס חצי-חצי. */
-const SEED_FRIDAY_STRENGTH = {
-  type: 'strength', title: 'כוח, גוף מלא', icon: 'ph-barbell',
-  note: 'אימון אחרון לשבוע. טכניקה נקייה לפני משקל.',
+/* ---------- תוכנית אימונים שבועית ----------
+   קליסטניקס (משקל גוף) של אליה בונן, שלב הבסיס רמה 3.5.
+   4 אימוני כוח (A דחיפה, B משיכה, רגליים, ושישי מתחלף A/B) + 2 אירובי + מנוחה. */
+
+const W_PUSH = {
+  type: 'strength', split: 'עליון · דחיפה', title: 'כוח · דחיפה', icon: 'ph-barbell',
+  note: 'חימום פלג גוף עליון לפני הכול. לדחוק כל סט קרוב לכשל, בטכניקה נקייה ובטווח מלא.',
   ex: [
-    { n: 'דדליפט רומני', d: '4×8' },
-    { n: 'לחיצת רגליים', d: '3×10' },
-    { n: 'לחיצת חזה בשיפוע', d: '3×10' },
-    { n: 'חתירה רחבה', d: '3×10' },
-    { n: 'כפיפות בטן עם משקל', d: '3×15' }
+    { n: 'שכיבות סמיכה בעמידת ידיים על הקיר', d: '3 × 5-8 · מנוחה 2׳' },
+    { n: 'מתח ארצ׳ר', d: '4 × 2-3 לכל יד · מנוחה 2׳' },
+    { n: 'אייסקרים מייקרס', d: '5 × 2-4 · מנוחה 1.5׳' },
+    { n: 'השענות לפלאנצ׳', d: '10-15 שנ׳', group: 'סופרסט · 3 סבבים' },
+    { n: 'הרמות דרגון פלאג', d: 'עד 10 · מנוחה 1.5׳', group: 'סופרסט · 3 סבבים' },
+    { n: 'שכיבות סמיכה בהשענה קדימה', d: '8-12', group: 'סופרסט · 4 סבבים' },
+    { n: 'מתח רחב', d: '8-12 · מנוחה 2׳', group: 'סופרסט · 4 סבבים' },
+    { n: 'מקבילים על מתח', d: '3 × עד 20 · מנוחה 2׳' },
+    { n: 'אל סיט על טבעות (בונוס)', d: 'מקסימום החזקה' }
   ]
 };
-const SEED_FRIDAY_CARDIO = {
-  type: 'cardio', title: 'אירובי, ריצה ארוכה', icon: 'ph-sneaker-move',
-  note: 'קצב נוח ורציף. הריצה הארוכה בונה את הבסיס האירובי.',
+
+const W_PULL = {
+  type: 'strength', split: 'עליון · משיכה', title: 'כוח · משיכה', icon: 'ph-barbell',
+  note: 'חימום פלג גוף עליון. דגש על משיכה נקייה ושליטה לאורך כל הטווח.',
+  ex: [
+    { n: 'אייסקרים מייקרס', d: '2 × מקסימום נקי · מנוחה 2׳' },
+    { n: 'שכיבות סמיכה בעמידת ידיים על הקיר', d: '2 × מקסימום · מנוחה 3׳' },
+    { n: 'מתח ארצ׳ר', d: '3 × מקסימום נקי לכל יד · מנוחה 1.5׳' },
+    { n: 'מתח צמוד', d: '8-12', group: 'סופרסט · 4 סבבים' },
+    { n: 'מקבילים עם רגליים בטאק', d: '8-12 · מנוחה 2׳', group: 'סופרסט · 4 סבבים' },
+    { n: 'מתח סופינציה', d: '8-12', group: 'סופרסט · 3 סבבים' },
+    { n: 'פשיטות מרפקים', d: 'עד 20 · מנוחה 2׳', group: 'סופרסט · 3 סבבים' },
+    { n: 'הרמות רגליים על מקבילים', d: '3 × מקסימום · מנוחה 3׳' }
+  ]
+};
+
+const W_LEGS = {
+  type: 'strength', split: 'רגליים', title: 'כוח · רגליים', icon: 'ph-barbell',
+  note: 'חימום פלג גוף תחתון ורוטינת הכנה לפי הסרטון. עומק נוח ושליטה בכל חזרה.',
+  ex: [
+    { n: 'פיסטול סקוואט', d: '3 × עד 15 לכל רגל · מנוחה 1.5׳' },
+    { n: 'ארצ׳ר סקוואט', d: '3 × 15-20 לכל רגל · מנוחה 1.5׳' },
+    { n: 'החלפות מכרעיים בקפיצה', d: '20', group: 'סופרסט · 2 סבבים' },
+    { n: 'הרמות תאומים על רגל אחת', d: '20 לכל רגל · מנוחה 2׳', group: 'סופרסט · 2 סבבים' },
+    { n: 'פשיטת ברכיים במשקל גוף', d: '2 × 12-15 · מנוחה 1׳' },
+    { n: 'פלאנק למקרבים', d: '2 × 30 שנ׳ החזקה · מנוחה 1׳' }
+  ]
+};
+
+const W_Z2 = {
+  type: 'cardio', split: 'אירובי · זון 2', title: 'אירובי · זון 2', icon: 'ph-heartbeat',
+  note: 'קצב שיחה. אם אי אפשר לדבר תוך כדי, מאטים. שורף שומן בלי לפגוע בהתאוששות.',
   ex: [
     { n: 'חימום הליכה מהירה', d: '5 דק׳' },
-    { n: 'ריצה קלה רציפה', d: '40 דק׳' },
-    { n: 'שחרור ומתיחות', d: '5 דק׳' }
+    { n: 'ריצה קלה בדופק 130-140', d: '35 דק׳' },
+    { n: 'שחרור והליכה', d: '5 דק׳' }
   ]
 };
-const SEED_WEEK = [
-  { /* ראשון */
-    type: 'strength', title: 'כוח, דחיפה', icon: 'ph-barbell',
-    note: 'חימום 5 דקות וסט ראשון קל. עולים במשקל רק כשהטכניקה נקייה.',
-    ex: [
-      { n: 'לחיצת חזה במוט', d: '4×8' },
-      { n: 'לחיצת כתפיים בעמידה', d: '3×10' },
-      { n: 'מקבילים או דיפס על ספסל', d: '3×10' },
-      { n: 'הרחקות צד עם משקולות', d: '3×12' },
-      { n: 'פלאנק', d: '3×45 שנ׳' }
-    ]
-  },
-  { /* שני */
-    type: 'cardio', title: 'אירובי, זון 2', icon: 'ph-heartbeat',
-    note: 'קצב שיחה. אם אי אפשר לדבר תוך כדי, מאטים.',
-    ex: [
-      { n: 'חימום הליכה', d: '5 דק׳' },
-      { n: 'ריצה קלה בדופק 130-140', d: '35 דק׳' },
-      { n: 'שחרור והליכה', d: '5 דק׳' }
-    ]
-  },
-  { /* שלישי */
-    type: 'strength', title: 'כוח, משיכה ורגליים', icon: 'ph-barbell',
-    note: 'סקוואט לעומק נוח, גב ניטרלי לאורך כל הסט.',
-    ex: [
-      { n: 'סקוואט', d: '4×8' },
-      { n: 'מתח או פולי עליון', d: '4×8' },
-      { n: 'חתירה בישיבה', d: '3×10' },
-      { n: 'כפיפת מרפקים', d: '3×12' },
-      { n: 'הרמות רגליים בתלייה', d: '3×12' }
-    ]
-  },
-  { /* רביעי */
-    type: 'rest', title: 'מנוחה', icon: 'ph-moon-stars',
-    note: 'הגוף נבנה דווקא היום. הליכה קלה של 20 דקות אם מתחשק, ושינה טובה.',
-    ex: []
-  },
-  { /* חמישי */
-    type: 'cardio', title: 'אירובי, אינטרוולים', icon: 'ph-lightning',
-    note: 'הדקה המהירה היא מאמץ 8 מתוך 10. לשמור על נשימה מסודרת.',
-    ex: [
-      { n: 'חימום ריצה קלה', d: '10 דק׳' },
-      { n: '6 × (דקה מהירה / 2 דקות קלות)', d: '18 דק׳' },
-      { n: 'שחרור', d: '7 דק׳' }
-    ]
-  },
-  null, /* שישי: מתחלף לפי שבוע */
-  { /* שבת */
-    type: 'rest', title: 'מנוחה', icon: 'ph-moon-stars',
-    note: 'שבת של מתיחות קלות והרבה מים. מחר מתחילים שבוע חדש.',
-    ex: []
-  }
-];
 
+const W_INT = {
+  type: 'cardio', split: 'אירובי · אינטרוולים', title: 'אירובי · אינטרוולים', icon: 'ph-lightning',
+  note: 'הדקה המהירה היא מאמץ 8 מתוך 10. לשמור על נשימה מסודרת בין ההתפרצויות.',
+  ex: [
+    { n: 'חימום ריצה קלה', d: '10 דק׳' },
+    { n: '6 × (דקה מהירה / 2 דקות קלות)', d: '18 דק׳' },
+    { n: 'שחרור', d: '7 דק׳' }
+  ]
+};
+
+const W_REST = {
+  type: 'rest', split: 'מנוחה', title: 'מנוחה', icon: 'ph-moon-stars',
+  note: 'השריר נבנה דווקא היום. הליכה קלה ושינה טובה. מחר חוזרים חזק.',
+  ex: []
+};
+
+/* יעד התקדמות: אתגר מעבר לרמה הבאה */
+const CHALLENGE = {
+  level: '3.5',
+  seq: '3 אייסקרים מייקרס ← 4 מתח ארצ׳ר לכל יד ← 8 שכיבות סמיכה בעמידת ידיים ← 10 מקבילים על מתח ← 10 מתח רגיל',
+  rule: 'הכול ברצף, בטכניקה נקייה ובטווח תנועה מלא.'
+};
+
+const PROG_VERSION = 2;
 function defaultProgram() {
+  /* ראשון דחיפה, שני אירובי, שלישי משיכה, רביעי רגליים, חמישי אירובי, שישי מתחלף A/B, שבת מנוחה */
   return {
-    week: JSON.parse(JSON.stringify(SEED_WEEK)),
-    fridayStrength: JSON.parse(JSON.stringify(SEED_FRIDAY_STRENGTH)),
-    fridayCardio: JSON.parse(JSON.stringify(SEED_FRIDAY_CARDIO))
+    version: PROG_VERSION,
+    week: [
+      JSON.parse(JSON.stringify(W_PUSH)),
+      JSON.parse(JSON.stringify(W_Z2)),
+      JSON.parse(JSON.stringify(W_PULL)),
+      JSON.parse(JSON.stringify(W_LEGS)),
+      JSON.parse(JSON.stringify(W_INT)),
+      null,
+      JSON.parse(JSON.stringify(W_REST))
+    ]
   };
 }
 
@@ -810,7 +845,7 @@ function load() {
     if (raw && raw.settings) {
       s = {
         settings: { ...DEFAULT_SETTINGS, ...raw.settings },
-        program: raw.program || defaultProgram(),
+        program: (raw.program && raw.program.version === PROG_VERSION) ? raw.program : defaultProgram(),
         customMeals: raw.customMeals || [],
         favorites: raw.favorites || [],
         days: raw.days || {},
@@ -865,7 +900,8 @@ function weekIndex(d) {
 }
 function getProgram(d) {
   const dow = d.getDay();
-  if (dow === 5) return weekIndex(d) % 2 === 0 ? state.program.fridayStrength : state.program.fridayCardio;
+  /* שישי: אימון הכוח הרביעי, מתחלף בין דחיפה (A) למשיכה (B) לפי השבוע */
+  if (dow === 5) return weekIndex(d) % 2 === 0 ? state.program.week[0] : state.program.week[2];
   return state.program.week[dow];
 }
 function weekDates(ref = new Date()) {
@@ -1092,6 +1128,46 @@ function renderHeader() {
 }
 
 /* ---------- render: today ---------- */
+/* טבעות קונצנטריות בסגנון Apple/Whoop: קלוריות, חלבון, מים */
+function concentricRings(vals) {
+  const radii = [52, 39, 26];
+  const cls = ['ring1', 'ring2', 'ring3'];
+  let svg = '<svg viewBox="0 0 120 120">';
+  radii.forEach((r, i) => {
+    const C = 2 * Math.PI * r;
+    const off = (C - C * Math.min(1, vals[i])).toFixed(1);
+    svg += `<circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--card-2)" stroke-width="8"></circle>`;
+    svg += `<circle class="cr-fg" cx="60" cy="60" r="${r}" fill="none" stroke="var(--${cls[i]})" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off}"></circle>`;
+  });
+  return svg + '</svg>';
+}
+
+function exRowHTML(ex, idx, done) {
+  return `
+  <button class="ex-row ${done ? 'done' : ''}" data-act="toggle-ex" data-arg="${idx}">
+    <span class="ex-check"><i class="ph ph-check"></i></span>
+    <span class="ex-main">
+      <span class="ex-name">${esc(ex.n)}</span>
+      <span class="ex-spec num">${esc(ex.d)}</span>
+    </span>
+  </button>`;
+}
+/* רשימת תרגילים עם קיבוץ סופרסטים סמוכים */
+function exercisesHTML(prog, d) {
+  const ex = prog.ex;
+  let html = '', i = 0;
+  while (i < ex.length) {
+    const g = ex[i].group;
+    if (g) {
+      let inner = '', j = i;
+      while (j < ex.length && ex[j].group === g) { inner += exRowHTML(ex[j], j, d.exDone[j]); j++; }
+      html += `<div class="ss-group"><span class="ss-tag"><i class="ph ph-link-simple"></i>${esc(g)}</span>${inner}</div>`;
+      i = j;
+    } else { html += exRowHTML(ex[i], i, d.exDone[i]); i++; }
+  }
+  return html;
+}
+
 function renderToday() {
   const s = state.settings;
   const d = day();
@@ -1109,6 +1185,12 @@ function renderToday() {
     }
   }
 
+  /* נירמול סימוני התרגילים + התקדמות */
+  if (prog.type !== 'rest' && d.exDone.length !== prog.ex.length) d.exDone = prog.ex.map(() => false);
+  const exTotal = prog.ex.length;
+  const doneCount = prog.type === 'rest' ? 0 : d.exDone.filter(Boolean).length;
+  const pct = exTotal ? Math.round(doneCount / exTotal * 100) : 0;
+
   /* כרטיס האימון / מנוחה */
   let workout = '';
   if (prog.type === 'rest') {
@@ -1119,27 +1201,17 @@ function renderToday() {
       <p style="font-size:13.5px;color:var(--tx-2);margin-top:8px;max-width:300px;margin-inline:auto">${esc(prog.note)}</p>
     </div>`;
   } else {
-    if (d.exDone.length !== prog.ex.length) d.exDone = prog.ex.map(() => false);
-    const doneCount = d.exDone.filter(Boolean).length;
-    const pct = prog.ex.length ? Math.round(doneCount / prog.ex.length * 100) : 0;
     workout = `
     <div class="card">
       <div class="wk-head">
         <div>
-          <span class="wk-type"><i class="ph ${prog.icon}"></i>${typeLabel(prog.type)}</span>
+          <span class="wk-type"><i class="ph ${prog.icon}"></i>${esc(prog.split || typeLabel(prog.type))}</span>
           <div class="wk-name">${esc(prog.title)}</div>
         </div>
         <button class="icon-btn" data-act="edit-workout" aria-label="עריכת האימון"><i class="ph ph-pencil-simple"></i></button>
       </div>
       <div class="wk-note">${esc(prog.note)}</div>
-      <div class="ex-list">
-        ${prog.ex.map((ex, i) => `
-        <button class="ex-row ${d.exDone[i] ? 'done' : ''}" data-act="toggle-ex" data-arg="${i}">
-          <span class="ex-check"><i class="ph ph-check"></i></span>
-          <span class="ex-name">${esc(ex.n)}</span>
-          <span class="ex-spec num">${esc(ex.d)}</span>
-        </button>`).join('')}
-      </div>
+      <div class="ex-list">${exercisesHTML(prog, d)}</div>
       <div class="wk-progress"><i style="width:${pct}%"></i></div>
       ${d.workoutDone
         ? `<div class="wk-done-banner"><i class="ph ph-check-circle"></i>האימון הושלם. עבודה יפה.</div>
@@ -1148,39 +1220,36 @@ function renderToday() {
     </div>`;
   }
 
-  /* Hero: טבעת סגירת היום, ארבעה עמודים (אימון, קלוריות, חלבון, מים) */
-  const doneCount = prog.type === 'rest' ? 0 : d.exDone.filter(Boolean).length;
-  const exTotal = prog.ex.length;
-  const pillars = [
-    { icon: 'ph-barbell', label: 'אימון',
-      v: prog.type === 'rest' ? 1 : (exTotal ? doneCount / exTotal : (d.workoutDone ? 1 : 0)),
-      state: prog.type === 'rest' ? 'מנוחה' : (d.workoutDone ? 'הושלם' : doneCount + '/' + exTotal) },
-    { icon: 'ph-flame', label: 'קלוריות', v: Math.min(1, d.cal / s.calTarget), state: Math.round(d.cal).toLocaleString('he-IL'), nav: 'food' },
-    { icon: 'ph-leaf', label: 'חלבון', v: Math.min(1, d.prot / s.proteinTarget), state: d.prot + ' ג׳', nav: 'food' },
-    { icon: 'ph-drop', label: 'מים', v: Math.min(1, d.water / s.waterTarget), state: d.water + '/' + s.waterTarget, nav: 'habits' }
-  ];
-  const score = Math.round(pillars.reduce((a, p) => a + p.v, 0) / pillars.length * 100);
-  const closed = pillars.filter(p => p.v >= 1).length;
+  /* Hero: טבעות קונצנטריות (קלוריות, חלבון, מים) + ניקוד יום מורכב */
+  const calPct = Math.min(1, d.cal / s.calTarget);
+  const protPct = Math.min(1, d.prot / s.proteinTarget);
+  const waterPct = Math.min(1, d.water / s.waterTarget);
+  const workoutPct = prog.type === 'rest' ? 1 : (exTotal ? doneCount / exTotal : (d.workoutDone ? 1 : 0));
+  const score = Math.round((workoutPct + calPct + protPct + waterPct) / 4 * 100);
   const statusText = score >= 100 ? 'סגרת את היום' : score >= 66 ? 'עוד קצת לסגור' : score >= 33 ? 'בדרך הנכונה' : score > 0 ? 'יאללה, התחלת' : 'בוא נתחיל את היום';
-  const C = 314, off = C - C * Math.min(1, score / 100);
+  const workoutChip = prog.type === 'rest' ? { c: 'done', i: 'ph-moon', t: 'יום מנוחה' }
+    : d.workoutDone ? { c: 'done', i: 'ph-check-circle', t: 'האימון הושלם' }
+    : { c: '', i: 'ph-barbell', t: doneCount > 0 ? doneCount + '/' + exTotal + ' תרגילים' : 'האימון עוד לפניך' };
+  const legend = [
+    { v: 'ring1', lab: 'קלוריות', val: Math.round(d.cal).toLocaleString('he-IL') + ' / ' + s.calTarget.toLocaleString('he-IL'), nav: 'food' },
+    { v: 'ring2', lab: 'חלבון', val: d.prot + ' / ' + s.proteinTarget + ' ג׳', nav: 'food' },
+    { v: 'ring3', lab: 'מים', val: d.water + ' / ' + s.waterTarget, nav: 'habits' }
+  ];
   const hero = `
   <div class="card hero">
     <div class="hero-ring">
-      <svg viewBox="0 0 120 120">
-        <circle class="ring-track" cx="60" cy="60" r="50"></circle>
-        <circle class="ring-fg" cx="60" cy="60" r="50" style="stroke-dashoffset:${off}"></circle>
-      </svg>
+      ${concentricRings([calPct, protPct, waterPct])}
       <div class="hero-ring-c"><b class="num" id="day-score">${score}</b><span>אחוז יום</span></div>
     </div>
     <div class="hero-info">
       <div class="hero-status">${statusText}</div>
-      <div class="hero-sub">${closed} מתוך 4 יעדים נסגרו</div>
-      <div class="hero-pillars">
-        ${pillars.map(p => `
-        <button class="p-row" ${p.nav ? `data-act="tab" data-arg="${p.nav}"` : ''}>
-          <span class="p-ico"><i class="ph ${p.icon}"></i></span>
-          <span class="p-lab">${p.label}</span>
-          <span class="p-state ${p.v >= 1 ? 'done' : ''}">${p.v >= 1 ? '<i class="ph ph-check-circle"></i>' : esc(p.state)}</span>
+      <div class="hero-chip ${workoutChip.c}"><i class="ph ${workoutChip.i}"></i>${esc(workoutChip.t)}</div>
+      <div class="hero-legend">
+        ${legend.map(l => `
+        <button class="lg-row" data-act="tab" data-arg="${l.nav}">
+          <span class="lg-dot" style="background:var(--${l.v})"></span>
+          <span class="lg-lab">${l.lab}</span>
+          <span class="lg-val num">${esc(l.val)}</span>
         </button>`).join('')}
       </div>
     </div>
@@ -1410,16 +1479,21 @@ function renderWeek() {
   const dates = weekDates(now);
 
   let strip = '';
-  let workoutsDone = 0;
+  let strengthDone = 0, cardioDone = 0, strengthTotal = 0, cardioTotal = 0;
   for (const dt of dates) {
     const k = dateKey(dt);
     const prog = getProgram(dt);
     const rec = dayRO(k);
     const isToday = k === tk;
     const isFuture = dt > now && !isToday;
+    if (prog.type === 'strength') strengthTotal++;
+    else if (prog.type === 'cardio') cardioTotal++;
     let cls = '', icon = '';
     if (prog.type === 'rest') { cls = 'rest'; icon = '<i class="ph ph-moon" style="font-size:13px"></i>'; }
-    else if (rec.workoutDone) { cls = 'done'; icon = '<i class="ph ph-check"></i>'; workoutsDone++; }
+    else if (rec.workoutDone) {
+      cls = 'done'; icon = '<i class="ph ph-check"></i>';
+      if (prog.type === 'cardio') cardioDone++; else strengthDone++;
+    }
     else if (isFuture) { cls = ''; icon = ''; }
     else { cls = 'missed'; icon = ''; }
     strip += `
@@ -1428,6 +1502,7 @@ function renderWeek() {
       <div class="wday-dot ${cls}">${icon}</div>
     </div>`;
   }
+  const workoutsDone = strengthDone + cardioDone;
 
   let calDays = 0, protDays = 0, loggedDays = 0;
   for (const dt of dates) {
@@ -1474,9 +1549,13 @@ function renderWeek() {
   <div class="card">
     <div class="card-head">
       <span class="card-title"><i class="ph ph-calendar-check"></i>השבוע שלי</span>
-      <span class="card-sub num">${workoutsDone}/5 אימונים</span>
+      <span class="card-sub num">${workoutsDone}/${strengthTotal + cardioTotal} אימונים</span>
     </div>
     <div class="week-strip">${strip}</div>
+    <div class="split-tally">
+      <span><i class="ph ph-barbell"></i>כוח <b class="num">${strengthDone}/${strengthTotal}</b></span>
+      <span><i class="ph ph-heartbeat"></i>אירובי <b class="num">${cardioDone}/${cardioTotal}</b></span>
+    </div>
   </div>
 
   <div class="stat-grid" style="grid-template-columns:1fr 1fr">
@@ -1515,6 +1594,13 @@ function renderWeek() {
       <input type="number" id="weight-input" step="0.1" inputmode="decimal" placeholder="שקילה של היום (ק&quot;ג)" value="${todayWeight ? todayWeight.kg : ''}">
       <button class="btn btn-acc" data-act="save-weight">שמירה</button>
     </div>
+  </div>
+
+  <div class="sec-title"><span>היעד הבא</span></div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:8px"><i class="ph ph-flag-pennant"></i>אתגר מעבר ${CHALLENGE.level}</div>
+    <div class="chal-seq">${esc(CHALLENGE.seq)}</div>
+    <div class="hint" style="margin-top:10px">${esc(CHALLENGE.rule)}</div>
   </div>`;
 
   $('#view-week').innerHTML = html;
@@ -1702,7 +1788,7 @@ function saveWorkout() {
   readEditorInputs();
   editBuffer.title = (editBuffer.title || '').trim() || editTarget.title;
   editBuffer.ex = editBuffer.ex
-    .map(e => ({ n: (e.n || '').trim(), d: (e.d || '').trim() }))
+    .map(e => ({ ...e, n: (e.n || '').trim(), d: (e.d || '').trim() }))
     .filter(e => e.n);
   /* כתיבה חזרה לתבנית האמיתית כדי שכל השבועות יתעדכנו */
   editTarget.title = editBuffer.title;
