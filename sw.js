@@ -2,7 +2,7 @@
    ניווט: network-first (עדכונים נטענים כשיש רשת, אופליין נופל למטמון).
    נכסים (פונטים, אייקונים, CDN): cache-first עם מילוי בזמן ריצה. */
 
-const CACHE = 'fitos-omer-v7';
+const CACHE = 'fitos-omer-v8';
 const SHELL = [
   './',
   './index.html',

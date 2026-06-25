@@ -569,34 +569,46 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .vital.on>i{color:var(--acc)}
 
 /* ===== Cinematic dashboard: ה-Twin שולט במסך ===== */
-.dash-hero{position:relative;margin:2px -16px 6px;height:min(62vh,540px);min-height:358px;overflow:hidden;display:flex}
+.stage{position:relative;margin:2px -16px 8px;height:min(66vh,560px);min-height:392px;overflow:hidden;display:flex}
 .hero-glow{
   position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
-  width:120%;height:80%;pointer-events:none;z-index:0;opacity:var(--gk,.5);filter:blur(6px);
+  width:122%;height:82%;pointer-events:none;z-index:0;opacity:var(--gk,.5);filter:blur(6px);
   background:
     radial-gradient(closest-side, rgba(84,214,196,.16), transparent 70%) 22% 34%/58% 66% no-repeat,
     radial-gradient(closest-side, rgba(185,233,78,.20), transparent 72%) 64% 48%/74% 82% no-repeat;
 }
-.hero-twin{
+.stage-twin{
   position:absolute;bottom:0;left:50%;transform:translateX(-50%);
   height:100%;width:auto;max-width:none;z-index:1;
   object-fit:contain;object-position:bottom center;pointer-events:none;user-select:none;
-  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 6%, #000 78%, transparent 100%);
-  mask-image:linear-gradient(to bottom, transparent 0, #000 6%, #000 78%, transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 6%, #000 80%, transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0, #000 6%, #000 80%, transparent 100%);
 }
 .hero-cam{position:absolute;top:10px;left:10px;z-index:4;width:34px;height:34px;border-radius:50%;
   background:rgba(19,22,15,.66);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   border:1px solid var(--line);color:var(--tx-2);display:grid;place-items:center;font-size:15px;transition:transform .14s ease}
 .hero-cam:active{transform:scale(.9)}
-.hero-top{position:absolute;top:9px;right:0;left:0;z-index:3;display:flex;gap:8px;padding:0 6px;justify-content:flex-start}
-.hud-pill{display:flex;align-items:center;gap:7px;background:rgba(19,22,15,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:13px;padding:8px 12px}
-.hud-pill span{font-size:10.5px;color:var(--tx-3);font-weight:600}
-.hud-pill b{font-size:16px;font-weight:800;color:var(--acc)}
-.hud-pill.cool b{color:var(--c-cool)}
-.hud-bar{width:50px;height:4px;border-radius:99px;background:var(--card-2);overflow:hidden}
-.hud-bar i{display:block;height:100%;background:var(--acc);border-radius:99px}
-.hero-foot{position:absolute;bottom:0;right:0;left:0;z-index:3;padding:38px 6px 6px;
-  background:linear-gradient(to top, var(--bg) 6%, rgba(11,13,10,.82) 44%, transparent 100%);
+/* כרטיסי זכוכית צפים בארבע הפינות סביב הדמות */
+.hchip{position:absolute;z-index:3;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:72px;
+  background:rgba(16,19,12,.5);-webkit-backdrop-filter:blur(13px) saturate(1.1);backdrop-filter:blur(13px) saturate(1.1);
+  border:1px solid rgba(244,248,235,.1);border-radius:16px;padding:10px 8px;text-align:center;
+  box-shadow:0 12px 30px -16px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.05);
+  transition:transform .14s cubic-bezier(.23,1,.32,1)}
+.hchip:active{transform:scale(.93)}
+.hchip>i{font-size:16px;color:var(--hc,var(--acc))}
+.hc-tx b{display:block;font-size:16px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.hc-tx span{font-size:9px;color:var(--tx-3);font-weight:600}
+.hchip.lime{--hc:var(--acc)} .hchip.warm{--hc:var(--c-warm)} .hchip.cool{--hc:var(--c-cool)}
+.hchip.tl{top:46px;left:8px} .hchip.tr{top:46px;right:8px}
+.hchip.bl{bottom:110px;left:8px} .hchip.br{bottom:110px;right:8px}
+.ready-tag{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);z-index:3;
+  display:inline-flex;align-items:center;gap:6px;background:rgba(16,19,12,.5);
+  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);border:1px solid rgba(244,248,235,.1);
+  border-radius:999px;padding:6px 14px;box-shadow:0 10px 28px -14px rgba(0,0,0,.85)}
+.ready-tag b{font-size:15px;font-weight:800;color:var(--c-cool)}
+.ready-tag span{font-size:10px;color:var(--tx-3);font-weight:600}
+.stage-foot{position:absolute;bottom:0;right:0;left:0;z-index:3;padding:40px 6px 6px;
+  background:linear-gradient(to top, var(--bg) 8%, rgba(11,13,10,.82) 46%, transparent 100%);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .hero-id{min-width:0;flex:1}
 .hero-name{display:flex;align-items:center;gap:7px;font-size:22px;font-weight:800;letter-spacing:-.01em}
@@ -650,8 +662,11 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .mile-foot{margin-top:14px;padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--tx-3);font-weight:600;text-align:center}
 .mile-foot i{color:var(--acc)}
 @media (min-width:560px){
-  .dash-hero{height:min(58vh,600px)}
-  .mgrid{grid-template-columns:repeat(4,1fr)}
+  .stage{height:min(62vh,620px)}
+  .hchip{min-width:88px;padding:12px 12px}
+  .hchip.tl,.hchip.tr{top:30px}
+  .hchip.bl,.hchip.br{bottom:120px}
+  .rec-card{padding:18px 12px}
 }
 /* כניסת כרטיסים מדורגת */
 @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -1667,7 +1682,7 @@ function renderToday() {
     </div>`;
   }
 
-  /* ===== Dashboard: ה-Twin שולט במסך ===== */
+  /* ===== Dashboard: ה-Twin במרכז, מדדים צפים מסביבו (HUD) ===== */
   const li = levelInfo();
   const streak = trainingStreak();
   const cw = currentWeight();
@@ -1677,23 +1692,31 @@ function renderToday() {
   const readiness = Math.min(99, 68 + streak * 3 + (d.sleep >= s.sleepTarget ? 6 : 0));
   const coach = aiCoach();
   const heroSrc = s.avatarUrl || 'assets/twin.webp';
+  const protPct = Math.min(100, Math.round(d.prot / s.proteinTarget * 100));
+  const calPct = Math.min(100, Math.round(d.cal / s.calTarget * 100));
+
+  const chip = (pos, cls, ic, val, lab, nav) =>
+    `<button class="hchip ${pos} ${cls}" ${nav ? `data-act="tab" data-arg="${nav}"` : ''}>
+      <i class="ph ${ic}"></i><div class="hc-tx"><b class="num">${val}</b><span>${lab}</span></div>
+    </button>`;
 
   const heroCTA = prog.type === 'rest'
     ? `<div class="hero-cta rest"><i class="ph ph-moon-stars"></i>יום מנוחה</div>`
     : d.workoutDone
-      ? `<div class="hero-cta is-done"><i class="ph-fill ph-check-circle"></i>האימון הושלם</div>`
+      ? `<div class="hero-cta is-done"><i class="ph-fill ph-check-circle"></i>הושלם</div>`
       : `<button class="btn btn-acc hero-cta" data-act="start-session"><i class="ph-fill ph-play"></i>התחל אימון</button>`;
 
-  const hero = `
-  <section class="dash-hero">
+  const stage = `
+  <section class="stage">
     <div class="hero-glow" style="--gk:${(0.32 + Math.min(1, streak / 7) * 0.5).toFixed(2)}"></div>
-    <img class="hero-twin" src="${heroSrc}" alt="Performance Twin">
+    <img class="stage-twin" src="${heroSrc}" alt="Performance Twin">
     <button class="hero-cam" data-act="avatar" aria-label="החלפת הדמות"><i class="ph ph-camera"></i></button>
-    <div class="hero-top">
-      <div class="hud-pill"><span>היעד</span><b class="num">${goalPct}%</b><div class="hud-bar"><i style="width:${goalPct}%"></i></div></div>
-      <div class="hud-pill cool"><span>מוכנות</span><b class="num">${readiness}</b></div>
-    </div>
-    <div class="hero-foot">
+    <div class="ready-tag"><b class="num">${readiness}</b><span>מוכנות</span></div>
+    ${chip('tl', '', 'ph-scales', cw.toFixed(1), 'משקל ק"ג', 'week')}
+    ${chip('tr', 'lime', 'ph-target', goalPct + '%', 'מהיעד', 'week')}
+    ${chip('bl', 'warm', 'ph-flame', Math.round(d.cal).toLocaleString('he-IL'), 'קלוריות', 'food')}
+    ${chip('br', 'cool', 'ph-leaf', d.prot, 'חלבון ג׳', 'food')}
+    <div class="stage-foot">
       <div class="hero-id">
         <div class="hero-name">${esc(s.name)}<i class="ph-fill ph-crown-simple"></i></div>
         <div class="hero-lvl">
@@ -1713,22 +1736,8 @@ function renderToday() {
     <div class="ai-tx"><b>המלצת המאמן</b><p>${esc(coach.t)}</p></div>
   </div>`;
 
-  /* מדדים */
-  const wDelta = state.weights.length >= 2 ? (state.weights[state.weights.length - 1].kg - state.weights[state.weights.length - 2].kg) : null;
-  const protPct = Math.min(100, Math.round(d.prot / s.proteinTarget * 100));
-  const calPct = Math.min(100, Math.round(d.cal / s.calTarget * 100));
-  const metrics = `
-  <div class="sec-title"><span>המדדים שלי</span></div>
-  <div class="mgrid">
-    ${metricCard({ lab: 'משקל', ic: 'ph-scales', val: cw.toFixed(1), unit: 'ק"ג', sub: wDelta == null ? 'הוסף שקילה' : (wDelta <= 0 ? '▼ ' : '▲ ') + Math.abs(wDelta).toFixed(1) + ' מהקודמת', nav: 'week' })}
-    ${metricCard({ lab: 'יעד', ic: 'ph-target', val: goalPct, unit: '%', bar: goalPct, sub: 'יעד ' + s.goalWeight + ' ק"ג', nav: 'week' })}
-    ${metricCard({ lab: 'חלבון', cls: 'cool', ic: 'ph-leaf', val: d.prot, unit: '/ ' + s.proteinTarget + ' ג׳', bar: protPct, nav: 'food' })}
-    ${metricCard({ lab: 'קלוריות', cls: 'warm', ic: 'ph-flame', val: Math.round(d.cal).toLocaleString('he-IL'), unit: '/ ' + s.calTarget.toLocaleString('he-IL'), bar: calPct, sub: Math.max(0, s.calTarget - d.cal).toLocaleString('he-IL') + ' נשארו', nav: 'food' })}
-  </div>`;
-
-  /* התאוששות: שינה+צעדים אמיתיים, HRV/דופק דוגמה */
+  /* התאוששות: שינה+צעדים אמיתיים, HRV/דופק דוגמה (יתחבר ל-Garmin בהמשך) */
   const recovery = `
-  <div class="sec-title"><span>התאוששות</span></div>
   <div class="rec-card">
     <div class="rec iris"><i class="ph ph-moon"></i><b class="num">${(d.sleep || 0).toFixed(1)}</b><span>שעות שינה</span></div>
     <div class="rec"><i class="ph ph-footprints"></i><b class="num">${(d.steps || 0).toLocaleString('he-IL')}</b><span>צעדים</span></div>
@@ -1740,7 +1749,6 @@ function renderToday() {
   let wkDone = 0, wkTotal = 0;
   for (const dt of weekDates()) { const p = getProgram(dt); if (p.type !== 'rest') { wkTotal++; if (dayRO(dateKey(dt)).workoutDone) wkDone++; } }
   const milestone = `
-  <div class="sec-title"><span>היעד הבא</span></div>
   <div class="mile">
     <div class="mile-row"><span><i class="ph ph-lightning"></i> לרמה ${li.level + 1}</span><b class="num">${li.need - li.into} XP</b></div>
     <div class="mc-bar"><i style="width:${Math.round(li.pct * 100)}%"></i></div>
@@ -1749,7 +1757,9 @@ function renderToday() {
     <div class="mile-foot"><i class="ph-fill ph-fire"></i> ${streak} ימי רצף · ${wkDone}/${wkTotal} אימוני השבוע</div>
   </div>`;
 
-  $('#view-today').innerHTML = nudge + hero + aiCard + metrics + workout + recovery + milestone;
+  $('#view-today').innerHTML = nudge + stage + aiCard + workout
+    + `<div class="sec-title"><span>התאוששות</span></div>` + recovery
+    + `<div class="sec-title"><span>היעד הבא</span></div>` + milestone;
 }
 
 /* ---------- render: food ---------- */

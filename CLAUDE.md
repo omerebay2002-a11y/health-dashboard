@@ -5,7 +5,9 @@
 ## סטאק
 - **קובץ יחיד**: `index.html` — HTML + CSS + Vanilla JS, בלי build ובלי תלויות npm.
 - **נתונים**: `localStorage` בלבד (מפתח `fitos-omer-v1`). אין שרת.
-- **דמות (Twin)**: `assets/twin.webp` — דמות אתלטית סינמטית שיוצרה ב-Higgsfield (soul_2), רקע כמעט-שחור שמשתלב, ~75KB. ההירו משתמש בה כברירת מחדל; `settings.avatarUrl` (העלאה של המשתמש, שומר יחס) דורס. שינוי דמות → להחליף את הקובץ ולעדכן גרסת SW.
+- **דמות (Twin)**: `assets/twin.webp` — הדמות **האמיתית של עומר** מ-Higgsfield Soul "Omer" (`soul_id: a9f0b463-c394-4d1e-8779-aee187926ede`, model `soul_2`), פול-בודי במצב אימון, רקע כמעט-שחור שמשתלב, ~40KB. **חשוב בפרומפט**: לא להשתמש במילה "twin"/"performance twin" (גורם לשכפול הדמות) — לבקש "one single solo man". ההירו משתמש בה כברירת מחדל; `settings.avatarUrl` (העלאה, שומר יחס) דורס. ליצור גרסה חדשה: `generate_image` model `soul_2` + ה-`soul_id`, להחליף קובץ ולעדכן גרסת SW.
+- **מבנה הדשבורד (לא לחזור לערימת כרטיסים)**: הדמות במרכז `.stage` (שולטת ~66% מהמסך), עם **4 כרטיסי זכוכית צפים בפינות** (`.hchip` tl/tr/bl/br: משקל, יעד, קלוריות, חלבון) שממסגרים אותה, תג מוכנות, ופוטר זהות (שם/רמה/XP/CTA). זה המבנה — לא להחזיר grid מתחת לדמות.
+- **Garmin (בהמשך)**: לעומר יש שעון Garmin. רקורי/HRV/דופק כרגע דוגמה — לחבר ל-Garmin כמקור אמיתי כשנגיע לזה.
 - **פונט**: Heebo (Google Fonts CDN) + JetBrains Mono למספרים. **אייקונים**: Phosphor Web (CDN, regular + fill).
 - **תצוגה מקדימה**: `.claude/launch.json` → שרת `dashboard` (npx http-server, פורט 4173).
 - **PWA**: `manifest.json` + `sw.js` (network-first לניווט, cache-first לנכסים). מעלים `CACHE` בכל שינוי. חי ב-GitHub Pages: https://omerebay2002-a11y.github.io/health-dashboard/
