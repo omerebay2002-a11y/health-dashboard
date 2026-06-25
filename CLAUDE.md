@@ -5,8 +5,10 @@
 ## סטאק
 - **קובץ יחיד**: `index.html` — HTML + CSS + Vanilla JS, בלי build ובלי תלויות npm.
 - **נתונים**: `localStorage` בלבד (מפתח `fitos-omer-v1`). אין שרת.
-- **פונט**: Heebo (Google Fonts CDN). **אייקונים**: Phosphor Web (CDN, regular + fill).
+- **דמות (Twin)**: `assets/twin.webp` — דמות אתלטית סינמטית שיוצרה ב-Higgsfield (soul_2), רקע כמעט-שחור שמשתלב, ~75KB. ההירו משתמש בה כברירת מחדל; `settings.avatarUrl` (העלאה של המשתמש, שומר יחס) דורס. שינוי דמות → להחליף את הקובץ ולעדכן גרסת SW.
+- **פונט**: Heebo (Google Fonts CDN) + JetBrains Mono למספרים. **אייקונים**: Phosphor Web (CDN, regular + fill).
 - **תצוגה מקדימה**: `.claude/launch.json` → שרת `dashboard` (npx http-server, פורט 4173).
+- **PWA**: `manifest.json` + `sw.js` (network-first לניווט, cache-first לנכסים). מעלים `CACHE` בכל שינוי. חי ב-GitHub Pages: https://omerebay2002-a11y.github.io/health-dashboard/
 
 ## שפת עיצוב
 - בסיס דארק: רקע `#0B0D0A`, כרטיסים `#13160F`, accent ליים `#B9E94E`, גווני ליים (`--ring1/2/3`).

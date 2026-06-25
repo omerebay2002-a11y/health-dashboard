@@ -2,14 +2,15 @@
    ניווט: network-first (עדכונים נטענים כשיש רשת, אופליין נופל למטמון).
    נכסים (פונטים, אייקונים, CDN): cache-first עם מילוי בזמן ריצה. */
 
-const CACHE = 'fitos-omer-v6';
+const CACHE = 'fitos-omer-v7';
 const SHELL = [
   './',
   './index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/icon-180.png'
+  './icons/icon-180.png',
+  './assets/twin.webp'
 ];
 
 self.addEventListener('install', e => {
