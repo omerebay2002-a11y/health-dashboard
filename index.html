@@ -569,7 +569,7 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .vital.on>i{color:var(--acc)}
 
 /* ===== Cinematic dashboard: ה-Twin שולט במסך ===== */
-.stage{position:relative;margin:2px -16px 8px;height:min(66vh,560px);min-height:392px;overflow:hidden;display:flex}
+.stage{position:relative;margin:2px -16px 6px;height:min(78vh,690px);min-height:484px;overflow:hidden;display:flex}
 .hero-glow{
   position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
   width:122%;height:82%;pointer-events:none;z-index:0;opacity:var(--gk,.5);filter:blur(6px);
@@ -599,21 +599,46 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .hc-tx b{display:block;font-size:16px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
 .hc-tx span{font-size:9px;color:var(--tx-3);font-weight:600}
 .hchip.lime{--hc:var(--acc)} .hchip.warm{--hc:var(--c-warm)} .hchip.cool{--hc:var(--c-cool)}
-.hchip.tl{top:46px;left:8px} .hchip.tr{top:46px;right:8px}
-.hchip.bl{bottom:110px;left:8px} .hchip.br{bottom:110px;right:8px}
-.ready-tag{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);z-index:3;
-  display:inline-flex;align-items:center;gap:6px;background:rgba(16,19,12,.5);
-  -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);border:1px solid rgba(244,248,235,.1);
-  border-radius:999px;padding:6px 14px;box-shadow:0 10px 28px -14px rgba(0,0,0,.85)}
-.ready-tag b{font-size:15px;font-weight:800;color:var(--c-cool)}
-.ready-tag span{font-size:10px;color:var(--tx-3);font-weight:600}
+.hchip.tl{top:74px;left:8px} .hchip.tr{top:74px;right:8px}
+.hchip.bl{bottom:118px;left:8px} .hchip.br{bottom:118px;right:8px}
+/* שורת מאמן צפה למעלה */
+.coach-bar{position:absolute;top:8px;left:8px;right:8px;z-index:3;display:flex;align-items:center;gap:10px;
+  background:rgba(16,19,12,.55);-webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
+  border:1px solid rgba(244,248,235,.1);border-radius:15px;padding:9px 12px;
+  box-shadow:0 12px 30px -16px rgba(0,0,0,.85)}
+.coach-bar .coach-ic{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:rgba(84,214,196,.14);color:var(--c-cool);font-size:17px}
+.coach-bar .coach-tx{font-size:12px;color:var(--tx);line-height:1.35;font-weight:500;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.coach-bar .coach-tx b{color:var(--c-cool);font-weight:700;margin-left:5px;font-size:10.5px}
+/* שעון על היד: דופק (דוגמה עד Garmin) */
+.wrist{position:absolute;z-index:3;right:15%;bottom:33%;width:56px;height:56px;border-radius:17px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  background:rgba(16,19,12,.66);-webkit-backdrop-filter:blur(12px) saturate(1.1);backdrop-filter:blur(12px) saturate(1.1);
+  border:1px solid rgba(244,248,235,.16);overflow:hidden;
+  box-shadow:0 14px 30px -12px rgba(0,0,0,.9), 0 0 0 4px rgba(11,13,10,.4), inset 0 1px 0 rgba(255,255,255,.08);
+  transition:transform .14s ease}
+.wrist:active{transform:scale(.92)}
+.wrist::after{content:'';position:absolute;left:-13px;top:50%;width:13px;height:1.5px;background:linear-gradient(to left, rgba(244,248,235,.32), transparent)}
+.wrist>i{font-size:12px;color:#FF6470}
+.wrist b{font-size:16px;font-weight:800;line-height:1;letter-spacing:-.03em}
+.wrist span{font-size:8px;color:var(--tx-3);font-weight:600;letter-spacing:.04em}
+.w-glint{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg, rgba(255,255,255,.14), transparent 45%);pointer-events:none}
+/* פתח להעלאת תמונה מלאה של המשתמש */
+.upload-hint{position:absolute;left:50%;bottom:104px;transform:translateX(-50%);z-index:3;
+  display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--tx);
+  background:rgba(16,19,12,.62);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border:1px dashed rgba(185,233,78,.4);border-radius:999px;padding:9px 15px;
+  box-shadow:0 12px 28px -14px rgba(0,0,0,.85);transition:transform .14s ease}
+.upload-hint:active{transform:translateX(-50%) scale(.95)}
+.upload-hint i{color:var(--acc);font-size:15px}
 .stage-foot{position:absolute;bottom:0;right:0;left:0;z-index:3;padding:40px 6px 6px;
   background:linear-gradient(to top, var(--bg) 8%, rgba(11,13,10,.82) 46%, transparent 100%);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
 .hero-id{min-width:0;flex:1}
 .hero-name{display:flex;align-items:center;gap:7px;font-size:22px;font-weight:800;letter-spacing:-.01em}
 .hero-name i{color:var(--acc);font-size:16px}
-.hero-lvl{display:flex;align-items:center;gap:8px;margin-top:9px}
+.hero-sub{font-size:11.5px;color:var(--tx-3);font-weight:600;margin-top:4px}
+.hero-lvl{display:flex;align-items:center;gap:8px;margin-top:8px}
 .lvl-chip{font-size:11.5px;font-weight:700;color:var(--tx-2);white-space:nowrap}
 .lvl-chip b{color:var(--acc)}
 .hero-lvl .xpbar{flex:1;max-width:118px;height:6px;border-radius:99px;background:var(--card-2);overflow:hidden;border:1px solid var(--line)}
@@ -1652,48 +1677,17 @@ function renderToday() {
   const doneCount = prog.type === 'rest' ? 0 : d.exDone.filter(Boolean).length;
   const pct = exTotal ? Math.round(doneCount / exTotal * 100) : 0;
 
-  /* כרטיס האימון / מנוחה */
-  let workout = '';
-  if (prog.type === 'rest') {
-    workout = `
-    <div class="card" style="text-align:center;padding:30px 20px">
-      <div class="rest-art"><i class="ph ${prog.icon}"></i></div>
-      <div class="wk-name">${esc(prog.title)}</div>
-      <p style="font-size:13.5px;color:var(--tx-2);margin-top:8px;max-width:300px;margin-inline:auto">${esc(prog.note)}</p>
-    </div>`;
-  } else {
-    workout = `
-    <div class="card">
-      <div class="wk-head">
-        <div>
-          <span class="wk-type"><i class="ph ${prog.icon}"></i>${esc(prog.split || typeLabel(prog.type))}</span>
-          <div class="wk-name">${esc(prog.title)}</div>
-        </div>
-        <button class="icon-btn" data-act="edit-workout" aria-label="עריכת האימון"><i class="ph ph-pencil-simple"></i></button>
-      </div>
-      <div class="wk-note">${esc(prog.note)}</div>
-      <div class="ex-list">${exercisesHTML(prog, d)}</div>
-      <div class="wk-progress"><i style="width:${pct}%"></i></div>
-      ${d.workoutDone
-        ? `<div class="wk-done-banner"><i class="ph ph-check-circle"></i>האימון הושלם. עבודה יפה.</div>
-           <button class="btn-text" data-act="undo-workout" style="margin-top:6px">ביטול סימון</button>`
-        : `<button class="btn btn-acc btn-wide" data-act="start-session" style="margin-top:16px"><i class="ph ph-play-circle"></i>התחל אימון מודרך</button>
-           <button class="btn-text" data-act="finish-workout" style="margin-top:6px;width:100%;justify-content:center">סמן כהושלם בלי טיימר</button>`}
-    </div>`;
-  }
-
-  /* ===== Dashboard: ה-Twin במרכז, מדדים צפים מסביבו (HUD) ===== */
+  /* ===== Dashboard: ה-Twin ממלא את המסך, הכול צף מסביבו ===== */
   const li = levelInfo();
   const streak = trainingStreak();
   const cw = currentWeight();
   const goalTotal = Math.max(0.1, s.startWeight - s.goalWeight);
   const goalPct = Math.min(100, Math.max(0, Math.round((s.startWeight - cw) / goalTotal * 100)));
-  const toGo = Math.max(0, cw - s.goalWeight);
   const readiness = Math.min(99, 68 + streak * 3 + (d.sleep >= s.sleepTarget ? 6 : 0));
+  const restHR = 48 + Math.round(Math.max(0, 8 - streak));   /* דוגמה עד חיבור Garmin */
   const coach = aiCoach();
   const heroSrc = s.avatarUrl || 'assets/twin.webp';
-  const protPct = Math.min(100, Math.round(d.prot / s.proteinTarget * 100));
-  const calPct = Math.min(100, Math.round(d.cal / s.calTarget * 100));
+  const splitLabel = prog.type === 'rest' ? 'מנוחה' : (prog.split || typeLabel(prog.type));
 
   const chip = (pos, cls, ic, val, lab, nav) =>
     `<button class="hchip ${pos} ${cls}" ${nav ? `data-act="tab" data-arg="${nav}"` : ''}>
@@ -1710,56 +1704,31 @@ function renderToday() {
   <section class="stage">
     <div class="hero-glow" style="--gk:${(0.32 + Math.min(1, streak / 7) * 0.5).toFixed(2)}"></div>
     <img class="stage-twin" src="${heroSrc}" alt="Performance Twin">
-    <button class="hero-cam" data-act="avatar" aria-label="החלפת הדמות"><i class="ph ph-camera"></i></button>
-    <div class="ready-tag"><b class="num">${readiness}</b><span>מוכנות</span></div>
+    <div class="coach-bar"><span class="coach-ic"><i class="ph ${coach.i}"></i></span><span class="coach-tx"><b>המאמן</b>${esc(coach.t)}</span></div>
     ${chip('tl', '', 'ph-scales', cw.toFixed(1), 'משקל ק"ג', 'week')}
     ${chip('tr', 'lime', 'ph-target', goalPct + '%', 'מהיעד', 'week')}
     ${chip('bl', 'warm', 'ph-flame', Math.round(d.cal).toLocaleString('he-IL'), 'קלוריות', 'food')}
     ${chip('br', 'cool', 'ph-leaf', d.prot, 'חלבון ג׳', 'food')}
+    <button class="wrist" data-act="tab" data-arg="habits" aria-label="התאוששות">
+      <span class="w-glint"></span><i class="ph-fill ph-heart"></i><b class="num">${restHR}</b><span>bpm</span>
+    </button>
+    ${s.avatarUrl
+      ? `<button class="hero-cam" data-act="avatar" aria-label="החלפת תמונה"><i class="ph ph-camera"></i></button>`
+      : `<button class="upload-hint" data-act="avatar"><i class="ph ph-upload-simple"></i>העלה תמונה מלאה שלך</button>`}
     <div class="stage-foot">
       <div class="hero-id">
         <div class="hero-name">${esc(s.name)}<i class="ph-fill ph-crown-simple"></i></div>
+        <div class="hero-sub">היום · ${esc(splitLabel)} · רמה ${li.level} · מוכנות ${readiness}</div>
         <div class="hero-lvl">
-          <span class="lvl-chip">רמה <b class="num">${li.level}</b></span>
           <div class="xpbar"><i style="width:${Math.round(li.pct * 100)}%"></i></div>
-          <span class="xp-num num">${li.into}/${li.need}</span>
+          <span class="xp-num num">${li.into}/${li.need} XP</span>
         </div>
       </div>
       ${heroCTA}
     </div>
   </section>`;
 
-  /* המלצת המאמן */
-  const aiCard = `
-  <div class="ai-card">
-    <div class="ai-ic"><i class="ph ${coach.i}"></i></div>
-    <div class="ai-tx"><b>המלצת המאמן</b><p>${esc(coach.t)}</p></div>
-  </div>`;
-
-  /* התאוששות: שינה+צעדים אמיתיים, HRV/דופק דוגמה (יתחבר ל-Garmin בהמשך) */
-  const recovery = `
-  <div class="rec-card">
-    <div class="rec iris"><i class="ph ph-moon"></i><b class="num">${(d.sleep || 0).toFixed(1)}</b><span>שעות שינה</span></div>
-    <div class="rec"><i class="ph ph-footprints"></i><b class="num">${(d.steps || 0).toLocaleString('he-IL')}</b><span>צעדים</span></div>
-    <div class="rec cool"><i class="ph ph-heartbeat"></i><b class="num">62</b><span>HRV</span></div>
-    <div class="rec cool"><i class="ph ph-pulse"></i><b class="num">54</b><span>דופק מנוחה</span></div>
-  </div>`;
-
-  /* היעד הבא */
-  let wkDone = 0, wkTotal = 0;
-  for (const dt of weekDates()) { const p = getProgram(dt); if (p.type !== 'rest') { wkTotal++; if (dayRO(dateKey(dt)).workoutDone) wkDone++; } }
-  const milestone = `
-  <div class="mile">
-    <div class="mile-row"><span><i class="ph ph-lightning"></i> לרמה ${li.level + 1}</span><b class="num">${li.need - li.into} XP</b></div>
-    <div class="mc-bar"><i style="width:${Math.round(li.pct * 100)}%"></i></div>
-    <div class="mile-row" style="margin-top:13px"><span><i class="ph ph-flag-pennant"></i> ליעד המשקל</span><b class="num">${toGo.toFixed(1)} ק"ג</b></div>
-    <div class="mc-bar"><i style="width:${goalPct}%"></i></div>
-    <div class="mile-foot"><i class="ph-fill ph-fire"></i> ${streak} ימי רצף · ${wkDone}/${wkTotal} אימוני השבוע</div>
-  </div>`;
-
-  $('#view-today').innerHTML = nudge + stage + aiCard + workout
-    + `<div class="sec-title"><span>התאוששות</span></div>` + recovery
-    + `<div class="sec-title"><span>היעד הבא</span></div>` + milestone;
+  $('#view-today').innerHTML = nudge + stage;
 }
 
 /* ---------- render: food ---------- */
