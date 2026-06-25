@@ -498,6 +498,72 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .ws-count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:74px;font-weight:800;letter-spacing:-.04em}
 .ws-next{font-size:14px;color:var(--tx-2);font-weight:600;margin-top:18px}
 .ws-next b{color:var(--tx)}
+
+/* ====== AI Performance Twin ====== */
+.twin{display:flex;flex-direction:column;align-items:center;margin:8px 0 18px}
+.twin-stage{position:relative;width:212px;height:212px;display:grid;place-items:center}
+.twin-aura{
+  position:absolute;inset:-16px;border-radius:50%;
+  background:radial-gradient(closest-side, rgba(185,233,78,.85), rgba(185,233,78,0) 70%);
+  opacity:var(--aura,.3);transform:scale(var(--aura-scale,1));filter:blur(15px);
+  animation:auraPulse 4.6s ease-in-out infinite;will-change:transform,opacity;
+}
+@keyframes auraPulse{0%,100%{transform:scale(var(--aura-scale,1))}50%{transform:scale(calc(var(--aura-scale,1) * 1.07));opacity:calc(var(--aura,.3) * .82)}}
+.twin-ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.twin-ring-fg{transition:stroke-dashoffset 1s cubic-bezier(.23,1,.32,1)}
+.twin-photo{
+  position:relative;width:158px;height:158px;border-radius:50%;
+  background-color:#161b10;background-image:linear-gradient(165deg,#1d2315,#10130c);
+  background-size:cover;background-position:center;
+  border:1px solid var(--line-strong);display:grid;place-items:center;
+  box-shadow:inset 0 1px 0 rgba(244,248,235,.06), 0 22px 50px -22px rgba(0,0,0,.85);
+}
+.twin-photo>i{font-size:80px;color:var(--tx-3)}
+.twin-photo.has{background-image:none}
+.twin-photo.has>i{display:none}
+.twin-edit{
+  position:absolute;bottom:4px;left:6px;width:36px;height:36px;border-radius:50%;
+  background:var(--card);border:1px solid var(--line-strong);color:var(--tx);font-size:16px;
+  display:grid;place-items:center;box-shadow:0 6px 16px rgba(0,0,0,.55);
+  transition:transform .14s cubic-bezier(.23,1,.32,1);
+}
+.twin-edit:active{transform:scale(.88)}
+.twin-level{
+  position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:5px;background:var(--acc);color:var(--on-acc);
+  padding:5px 14px;border-radius:999px;box-shadow:0 10px 22px -8px rgba(185,233,78,.55);
+}
+.twin-level span{font-size:10px;font-weight:700;opacity:.72}
+.twin-level b{font-size:15px;font-weight:800}
+.twin-name{margin-top:24px;font-size:17px;font-weight:800;letter-spacing:-.01em}
+.twin-name span{color:var(--tx-3);font-weight:600;font-size:13px}
+.twin-xp{width:100%;max-width:300px;margin-top:12px}
+.xp-track{height:8px;border-radius:99px;background:var(--card-2);overflow:hidden;border:1px solid var(--line)}
+.xp-track i{display:block;height:100%;background:linear-gradient(90deg,var(--acc-deep),var(--acc));border-radius:99px;transition:width .8s cubic-bezier(.23,1,.32,1)}
+.xp-meta{display:flex;justify-content:space-between;align-items:center;margin-top:7px;font-size:11.5px;color:var(--tx-3);font-weight:600}
+.xp-meta i{color:var(--acc)}
+/* coach line */
+.coach{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:right;
+  background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-bottom:12px;
+  box-shadow:inset 0 1px 0 rgba(244,248,235,.04), 0 14px 30px -24px rgba(0,0,0,.7);
+}
+.coach-ic{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(185,233,78,.12);color:var(--acc);font-size:19px}
+.coach-tx{font-size:13.5px;color:var(--tx);line-height:1.45}
+.coach-tx b{display:block;font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.04em;margin-bottom:1px}
+/* vitals */
+.vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.vital{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 4px;
+  transition:border-color .15s ease,transform .14s cubic-bezier(.23,1,.32,1);
+}
+.vital:active{transform:scale(.95)}
+.vital>i{font-size:17px;color:var(--tx-3);transition:color .15s ease}
+.vital b{font-size:14px;font-weight:800;letter-spacing:-.02em}
+.vital span{font-size:10px;color:var(--tx-3);font-weight:600}
+.vital.on{border-color:rgba(185,233,78,.32)}
+.vital.on>i{color:var(--acc)}
 /* כניסת כרטיסים מדורגת */
 @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 /* מחוון טאב פעיל */
@@ -726,6 +792,7 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
   </div>
 </div>
 
+<input type="file" id="avatar-input" accept="image/*" hidden>
 <canvas id="confetti"></canvas>
 <div id="toast"></div>
 
@@ -746,6 +813,7 @@ const DEFAULT_SETTINGS = {
   sleepTarget: 7.5,
   startWeight: 68,
   goalWeight: 65,
+  avatarUrl: '',
   onboarded: false
 };
 
@@ -903,7 +971,8 @@ function load() {
         favorites: raw.favorites || [],
         days: raw.days || {},
         weights: raw.weights || [],
-        celebrated: raw.celebrated || {}
+        celebrated: raw.celebrated || {},
+        lastLevel: raw.lastLevel || 0
       };
       /* משתמש קיים (יש לו נתונים) לא עובר אונבורדינג מחדש */
       if (raw.settings.onboarded === undefined) {
@@ -919,7 +988,8 @@ function load() {
     favorites: [],
     days: {},
     weights: [],
-    celebrated: {}
+    celebrated: {},
+    lastLevel: 0
   };
 }
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
@@ -1122,6 +1192,7 @@ function dayIsClosed(d, prog) {
   return workoutOK && waterOK && calOK && protOK;
 }
 function checkDayClosed() {
+  checkLevelUp();
   const tk = todayKey();
   if (state.celebrated[tk]) return;
   const d = day();
@@ -1366,6 +1437,83 @@ function exercisesHTML(prog, d) {
   return html;
 }
 
+/* ---------- XP / רמות (שכבת ה-RPG) ----------
+   ה-XP מחושב מחדש מהנתונים השמורים כדי שלא ייווצרו סטיות. */
+const XP_PER_LEVEL = 200;
+function totalXP() {
+  const s = state.settings;
+  let xp = 0;
+  for (const k in state.days) {
+    const d = state.days[k];
+    if (d.workoutDone) xp += 50;
+    if (d.cal > 0) xp += 10;
+    if (d.prot >= s.proteinTarget * 0.9) xp += 20;
+    if (d.water >= s.waterTarget) xp += 15;
+  }
+  for (const k in (state.celebrated || {})) xp += 40;     /* בונוס סגירת יום */
+  xp += (state.weights ? state.weights.length : 0) * 10;  /* שקילות */
+  return xp;
+}
+function levelInfo() {
+  const xp = totalXP();
+  return { xp, level: Math.floor(xp / XP_PER_LEVEL) + 1, into: xp % XP_PER_LEVEL, need: XP_PER_LEVEL, pct: (xp % XP_PER_LEVEL) / XP_PER_LEVEL };
+}
+function checkLevelUp() {
+  const level = levelInfo().level;
+  if (!state.lastLevel) { state.lastLevel = level; save(); return; }
+  if (level > state.lastLevel) {
+    state.lastLevel = level; save();
+    celebrate();
+    toast('עלית לרמה ' + level + '. הגרסה החזקה שלך מתקרבת.');
+  } else if (level < state.lastLevel) {
+    state.lastLevel = level; save();
+  }
+}
+
+/* מאמן AI מבוסס-כללים: בוחר את ההמלצה הרלוונטית ביותר למצב הנוכחי */
+function aiCoach() {
+  const s = state.settings, d = day();
+  const prog = getProgram(new Date());
+  if (state.celebrated[todayKey()]) return { i: 'ph-trophy', t: 'סגרת את היום. הגרסה החזקה שלך מודה לך.' };
+  if (prog.type === 'rest') return { i: 'ph-moon-stars', t: 'יום מנוחה. שינה טובה והרבה מים בונים אותך לא פחות מאימון.' };
+  if (!d.workoutDone) {
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    if (getProgram(y).type !== 'rest' && !dayRO(dateKey(y)).workoutDone) {
+      return { i: 'ph-arrow-u-up-left', t: 'פספסת אתמול. היום זו ההזדמנות לחזור למסלול.' };
+    }
+    return { i: 'ph-barbell', t: 'האימון של היום: ' + prog.split + '. 50 XP מחכים לך.' };
+  }
+  if (d.prot < s.proteinTarget * 0.8) return { i: 'ph-leaf', t: 'אימון מעולה. עוד ' + Math.round(s.proteinTarget - d.prot) + ' ג׳ חלבון והשריר באמת נבנה.' };
+  if (d.water < s.waterTarget) return { i: 'ph-drop', t: 'כמעט שם. עוד ' + (s.waterTarget - d.water) + ' כוסות מים לסגירת היום.' };
+  if (d.cal === 0) return { i: 'ph-fork-knife', t: 'אל תשכח לתעד את התזונה כדי לסגור את היום.' };
+  return { i: 'ph-fire', t: 'הכול בכיוון. עוד יום שבונה את הרצף.' };
+}
+
+/* העלאת תמונת אווטאר: חיתוך מרכזי ל-400×400 ודחיסה, כדי לא להעמיס על localStorage */
+function onAvatarFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const SZ = 400;
+      const c = document.createElement('canvas');
+      c.width = SZ; c.height = SZ;
+      const scale = Math.max(SZ / img.width, SZ / img.height);
+      const w = img.width * scale, h = img.height * scale;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, (SZ - w) / 2, (SZ - h) / 2, w, h);
+      try {
+        state.settings.avatarUrl = c.toDataURL('image/jpeg', 0.82);
+        save(); render();
+        toast('האווטאר עודכן');
+      } catch (err) { toast('לא הצלחתי לשמור את התמונה'); }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 function renderToday() {
   const s = state.settings;
   const d = day();
@@ -1419,58 +1567,63 @@ function renderToday() {
     </div>`;
   }
 
-  /* Hero: טבעות קונצנטריות (קלוריות, חלבון, מים) + ניקוד יום מורכב */
-  const calPct = Math.min(1, d.cal / s.calTarget);
-  const protPct = Math.min(1, d.prot / s.proteinTarget);
-  const waterPct = Math.min(1, d.water / s.waterTarget);
-  const workoutPct = prog.type === 'rest' ? 1 : (exTotal ? doneCount / exTotal : (d.workoutDone ? 1 : 0));
-  const score = Math.round((workoutPct + calPct + protPct + waterPct) / 4 * 100);
-  const statusText = score >= 100 ? 'סגרת את היום' : score >= 66 ? 'עוד קצת לסגור' : score >= 33 ? 'בדרך הנכונה' : score > 0 ? 'יאללה, התחלת' : 'בוא נתחיל את היום';
-  const workoutChip = prog.type === 'rest' ? { c: 'done', i: 'ph-moon', t: 'יום מנוחה' }
-    : d.workoutDone ? { c: 'done', i: 'ph-check-circle', t: 'האימון הושלם' }
-    : { c: '', i: 'ph-barbell', t: doneCount > 0 ? doneCount + '/' + exTotal + ' תרגילים' : 'האימון עוד לפניך' };
-  const legend = [
-    { v: 'ring1', lab: 'קלוריות', val: Math.round(d.cal).toLocaleString('he-IL') + ' / ' + s.calTarget.toLocaleString('he-IL'), nav: 'food' },
-    { v: 'ring2', lab: 'חלבון', val: d.prot + ' / ' + s.proteinTarget + ' ג׳', nav: 'food' },
-    { v: 'ring3', lab: 'מים', val: d.water + ' / ' + s.waterTarget, nav: 'habits' }
-  ];
-  const hero = `
-  <div class="card hero">
-    <div class="hero-ring">
-      ${concentricRings([calPct, protPct, waterPct])}
-      <div class="hero-ring-c"><b class="num" id="day-score">${score}</b><span>אחוז יום</span></div>
+  /* Hero: ה-Twin — אווטאר במרכז, טבעת XP/רמה, הילה לפי רצף */
+  const li = levelInfo();
+  const streak = trainingStreak();
+  const auraK = Math.min(1, streak / 7);
+  const RC = 2 * Math.PI * 86;
+  const ringOff = RC - RC * li.pct;
+  const av = s.avatarUrl;
+  const twin = `
+  <div class="twin">
+    <div class="twin-stage" style="--aura:${(0.16 + auraK * 0.5).toFixed(2)};--aura-scale:${(0.88 + auraK * 0.34).toFixed(2)}">
+      <div class="twin-aura"></div>
+      <svg class="twin-ring" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="86" fill="none" stroke="var(--card-2)" stroke-width="5"></circle>
+        <circle class="twin-ring-fg" cx="100" cy="100" r="86" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${RC.toFixed(1)}" stroke-dashoffset="${ringOff.toFixed(1)}"></circle>
+      </svg>
+      <div class="twin-photo ${av ? 'has' : ''}" ${av ? `style="background-image:url('${av}')"` : ''}>
+        <i class="ph ph-person"></i>
+        <button class="twin-edit" data-act="avatar" aria-label="העלאת תמונה"><i class="ph ph-camera"></i></button>
+      </div>
+      <div class="twin-level"><span>רמה</span><b class="num">${li.level}</b></div>
     </div>
-    <div class="hero-info">
-      <div class="hero-status">${statusText}</div>
-      <div class="hero-chip ${workoutChip.c}"><i class="ph ${workoutChip.i}"></i>${esc(workoutChip.t)}</div>
-      <div class="hero-legend">
-        ${legend.map(l => `
-        <button class="lg-row" data-act="tab" data-arg="${l.nav}">
-          <span class="lg-dot" style="background:var(--${l.v})"></span>
-          <span class="lg-lab">${l.lab}</span>
-          <span class="lg-val num">${esc(l.val)}</span>
-        </button>`).join('')}
+    <div class="twin-name">${esc(s.name)} <span>· הגרסה המאמנת</span></div>
+    <div class="twin-xp">
+      <div class="xp-track"><i style="width:${Math.round(li.pct * 100)}%"></i></div>
+      <div class="xp-meta">
+        <span>${streak > 0 ? '<i class="ph-fill ph-fire"></i> ' + streak + ' ימי רצף' : 'התחל רצף היום'}</span>
+        <span class="num">${li.into} / ${li.need} XP</span>
       </div>
     </div>
   </div>`;
 
-  /* פס נתונים אתלטי: רצף, אימוני השבוע, ק"ג ליעד */
-  let wkDone = 0, wkTotal = 0;
-  for (const dt of weekDates()) {
-    const p = getProgram(dt);
-    if (p.type !== 'rest') { wkTotal++; if (dayRO(dateKey(dt)).workoutDone) wkDone++; }
-  }
-  const toGo = Math.max(0, currentWeight() - s.goalWeight);
-  const band = `
-  <div class="statband">
-    <button class="sb" data-act="tab" data-arg="week"><b class="num">${trainingStreak()}</b><span>רצף ימים</span></button>
-    <button class="sb" data-act="tab" data-arg="week"><b class="num">${wkDone}/${wkTotal}</b><span>אימוני השבוע</span></button>
-    <button class="sb" data-act="tab" data-arg="week"><b class="num">${toGo.toFixed(1)}</b><span>ק"ג ליעד</span></button>
+  /* שורת המאמן */
+  const coach = aiCoach();
+  const coachCard = `
+  <div class="coach">
+    <span class="coach-ic"><i class="ph ${coach.i}"></i></span>
+    <span class="coach-tx"><b>המאמן</b>${esc(coach.t)}</span>
   </div>`;
 
-  $('#view-today').innerHTML = nudge + hero + band + workout;
-  animateNumber($('#day-score'), lastDayScore, score);
-  lastDayScore = score;
+  /* וייטלס היום */
+  const vitals = [
+    { ic: 'ph-barbell', lab: 'אימון', val: prog.type === 'rest' ? 'מנוחה' : (d.workoutDone ? 'הושלם' : doneCount + '/' + exTotal), on: prog.type === 'rest' || d.workoutDone },
+    { ic: 'ph-flame', lab: 'קלוריות', val: Math.round(d.cal).toLocaleString('he-IL'), on: d.cal > 0 && d.cal <= s.calTarget + 50, nav: 'food' },
+    { ic: 'ph-leaf', lab: 'חלבון', val: d.prot + ' ג׳', on: d.prot >= s.proteinTarget * 0.9, nav: 'food' },
+    { ic: 'ph-drop', lab: 'מים', val: d.water + '/' + s.waterTarget, on: d.water >= s.waterTarget, nav: 'habits' }
+  ];
+  const vitalsRow = `
+  <div class="vitals">
+    ${vitals.map(v => `
+    <button class="vital ${v.on ? 'on' : ''}" ${v.nav ? `data-act="tab" data-arg="${v.nav}"` : ''}>
+      <i class="ph ${v.ic}"></i>
+      <b class="num">${esc(v.val)}</b>
+      <span>${v.lab}</span>
+    </button>`).join('')}
+  </div>`;
+
+  $('#view-today').innerHTML = nudge + twin + coachCard + vitalsRow + workout;
 }
 
 /* ---------- render: food ---------- */
@@ -2088,6 +2241,7 @@ document.addEventListener('click', e => {
       d.workoutDone = false;
       save(); renderToday(); break;
     case 'edit-workout': openWorkoutEditor(); break;
+    case 'avatar': $('#avatar-input').click(); break;
 
     /* מצב אימון מודרך */
     case 'start-session': startSession(); break;
@@ -2177,6 +2331,7 @@ document.addEventListener('click', e => {
       state.weights.sort((a, b) => a.date < b.date ? -1 : 1);
       save(); render();
       toast('המשקל נשמר');
+      checkLevelUp();
       break;
     }
 
@@ -2216,6 +2371,14 @@ document.addEventListener('click', e => {
 /* חיפוש בספריית הארוחות */
 document.addEventListener('input', e => {
   if (e.target && e.target.id === 'meal-search') buildLibrary(e.target.value);
+});
+
+/* העלאת אווטאר */
+document.addEventListener('change', e => {
+  if (e.target && e.target.id === 'avatar-input' && e.target.files && e.target.files[0]) {
+    onAvatarFile(e.target.files[0]);
+    e.target.value = '';
+  }
 });
 
 /* ---------- init ---------- */
