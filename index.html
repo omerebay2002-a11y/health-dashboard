@@ -631,6 +631,15 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
   box-shadow:0 12px 28px -14px rgba(0,0,0,.85);transition:transform .14s ease}
 .upload-hint:active{transform:translateX(-50%) scale(.95)}
 .upload-hint i{color:var(--acc);font-size:15px}
+/* בורר תוכנית (Plan Builder) */
+#goal-body label.fld{margin-top:6px}
+.gchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.gchip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--tx-2);
+  background:var(--card-2);border:1px solid var(--line);border-radius:999px;padding:9px 14px;
+  transition:background .14s ease,border-color .14s ease,color .14s ease,transform .12s ease}
+.gchip>i{font-size:15px}
+.gchip.on{background:rgba(185,233,78,.14);border-color:var(--acc);color:var(--acc)}
+.gchip:active{transform:scale(.95)}
 .stage-foot{position:absolute;bottom:0;right:0;left:0;z-index:3;padding:40px 6px 6px;
   background:linear-gradient(to top, var(--bg) 8%, rgba(11,13,10,.82) 46%, transparent 100%);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
@@ -788,6 +797,7 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
   </div>
   <div class="sheet-foot">
     <button class="btn btn-acc btn-wide" data-act="save-settings">שמירה</button>
+    <button class="btn btn-ghost btn-wide" data-act="open-goal"><i class="ph ph-target"></i>בניית תוכנית אימון</button>
     <div class="danger-row">
       <button data-act="reset-day">איפוס היום הנוכחי</button>
       <button data-act="reset-program">איפוס תוכנית האימונים</button>
@@ -864,6 +874,17 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
     <div class="ws-prog" id="ws-prog"></div>
   </div>
   <div class="ws-body" id="ws-body"></div>
+</div>
+
+<!-- plan builder sheet -->
+<div class="sheet" id="sheet-goal">
+  <div class="sheet-grip"></div>
+  <h2>בניית תוכנית אימון</h2>
+  <p class="sub">בחר מטרה ופרטים, ואני בונה לך תוכנית שבועית מותאמת.</p>
+  <div id="goal-body"></div>
+  <div class="sheet-foot">
+    <button class="btn btn-acc btn-wide" data-act="build-plan"><i class="ph ph-sparkle"></i>בנה לי תוכנית</button>
+  </div>
 </div>
 
 <!-- onboarding -->
@@ -943,6 +964,7 @@ const DEFAULT_SETTINGS = {
   startWeight: 68,
   goalWeight: 65,
   avatarUrl: '',
+  profile: null,
   onboarded: false
 };
 
@@ -1042,6 +1064,121 @@ function defaultProgram() {
       JSON.parse(JSON.stringify(W_REST))
     ]
   };
+}
+
+/* ===== מחולל תוכניות רב-דיסציפלינרי (ידע ב-skill: training-coach) ===== */
+const DISCIPLINES = [
+  { id: 'calisthenics', name: 'קליסטניקס', icon: 'ph-barbell', subs: [{ id: 'base', name: 'בסיס וכוח' }] },
+  { id: 'running', name: 'ריצה', icon: 'ph-sneaker-move', subs: [{ id: '5k', name: '5 ק"מ' }, { id: '10k', name: '10 ק"מ' }, { id: 'half', name: 'חצי מרתון' }, { id: 'marathon', name: 'מרתון' }] },
+  { id: 'gym', name: 'חדר כושר', icon: 'ph-barbell', subs: [{ id: 'hypertrophy', name: 'מסה' }, { id: 'strength', name: 'כוח' }, { id: 'fatloss', name: 'חיטוב' }] },
+  { id: 'crossfit', name: 'קרוספיט', icon: 'ph-fire', subs: [{ id: 'general', name: 'כללי' }, { id: 'competitor', name: 'תחרותי' }] },
+  { id: 'hybrid', name: 'הייבריד / HYROX', icon: 'ph-lightning', subs: [{ id: 'strength-endurance', name: 'כוח וסיבולת' }, { id: 'fatloss', name: 'חיטוב' }] },
+  { id: 'triathlon', name: 'טריאתלון', icon: 'ph-waves', subs: [{ id: 'sprint', name: 'ספרינט / אולימפי' }, { id: '70.3', name: 'איירונמן 70.3' }, { id: 'ironman', name: 'איירונמן מלא' }] }
+];
+const EQUIPMENT = [
+  { id: 'bodyweight', name: 'משקל גוף' }, { id: 'bar', name: 'מתח / מקבילים' }, { id: 'dumbbells', name: 'משקולות יד' },
+  { id: 'gym', name: 'חדר כושר מלא' }, { id: 'pool', name: 'בריכה' }, { id: 'bike', name: 'אופניים' }
+];
+const LEVELS = [{ id: 'beginner', name: 'מתחיל' }, { id: 'intermediate', name: 'בינוני' }, { id: 'advanced', name: 'מתקדם' }];
+
+function restDay(note) { return { type: 'rest', split: 'מנוחה', title: 'מנוחה', icon: 'ph-moon-stars', note: note || 'התאוששות. שינה והרבה מים בונים אותך לא פחות מאימון.', ex: [] }; }
+/* slots: מפתח=אינדקס יום (0=ראשון..6=שבת), ערך=אימון. שאר הימים מנוחה. שבת תמיד מנוחה. */
+function fillWeek(slots) {
+  const W = [0, 1, 2, 3, 4, 5, 6].map(() => restDay());
+  Object.keys(slots).forEach(k => { W[+k] = slots[k]; });
+  return W;
+}
+
+function genRunning(p) {
+  const li = p.level === 'advanced' ? 2 : p.level === 'intermediate' ? 1 : 0;
+  const longKm = ({ '5k': [5, 7, 8], '10k': [8, 10, 12], 'half': [12, 15, 18], 'marathon': [18, 26, 32] }[p.subgoal] || [6, 8, 10])[li];
+  const easy = { type: 'cardio', split: 'אירובי · זון 2', title: 'ריצה קלה', icon: 'ph-heartbeat', note: 'קצב שיחה. אם אי אפשר לדבר תוך כדי, מאטים. כאן נבנה הבסיס האירובי.', ex: [{ n: 'חימום הליכה מהירה', d: '5 דק׳' }, { n: 'ריצה קלה בזון 2', d: li === 0 ? '25 דק׳' : '35 דק׳' }, { n: 'שחרור והליכה', d: '5 דק׳' }] };
+  const intervals = { type: 'cardio', split: 'אירובי · אינטרוולים', title: 'אינטרוולים', icon: 'ph-lightning', note: 'המקטע המהיר במאמץ 8 מתוך 10. אל תתחיל חזק מדי, נשימה מסודרת בין החזרות.', ex: [{ n: 'חימום ריצה קלה', d: '10 דק׳' }, { n: (li >= 1 ? '6' : '5') + ' × (400 מ׳ מהיר / 90 שנ׳ הליכה)', d: '~18 דק׳' }, { n: 'שחרור', d: '7 דק׳' }] };
+  const tempo = { type: 'cardio', split: 'אירובי · טמפו', title: 'ריצת טמפו', icon: 'ph-gauge', note: 'קצב נוח-קשה שאפשר להחזיק. בונה את סף החומצה ואת הקצב התחרותי.', ex: [{ n: 'חימום', d: '10 דק׳' }, { n: 'ריצת טמפו רציפה', d: li >= 1 ? '25 דק׳' : '18 דק׳' }, { n: 'שחרור', d: '5 דק׳' }] };
+  const long = { type: 'cardio', split: 'אירובי · ארוך', title: 'ריצה ארוכה', icon: 'ph-sneaker-move', note: 'קצב נוח ורציף. הריצה הארוכה בונה סיבולת ועמידות מנטלית. שתייה לאורך הדרך.', ex: [{ n: 'ריצה ארוכה רציפה', d: longKm + ' ק"מ' }, { n: 'שחרור והליכה', d: '5 דק׳' }] };
+  const strength = { type: 'strength', split: 'כוח לרץ', title: 'כוח לרץ', icon: 'ph-barbell', note: 'כוח וליבה מונעים פציעות ומשפרים כלכלת ריצה.', ex: [{ n: 'סקוואט משקל גוף', d: '3 × 15', tip: 'ירידה לעומק נוח, ברך בכיוון האצבעות.' }, { n: 'מתח או חתירה', d: '3 × 8-10' }, { n: 'מכרעיים מהליכה', d: '3 × 10 לכל רגל' }, { n: 'הרמות עגל', d: '3 × 15' }, { n: 'פלאנק', d: '3 × 45 שנ׳' }] };
+  const slots = { 0: easy, 2: intervals, 5: long };
+  if (p.days >= 4) slots[4] = tempo;
+  if (p.days >= 5) slots[1] = strength;
+  if (p.days >= 6) slots[3] = { ...easy, title: 'ריצת התאוששות', note: 'ריצה קלה מאוד לשחרור הרגליים.' };
+  return fillWeek(slots);
+}
+
+function genGym(p) {
+  const sg = p.subgoal || 'hypertrophy';
+  const main = sg === 'strength' ? '4 × 4-6 · מנוחה 2.5׳' : '4 × 8-12 · מנוחה 75 שנ׳';
+  const acc = sg === 'strength' ? '3 × 6-8 · מנוחה 2׳' : '3 × 10-15 · מנוחה 60 שנ׳';
+  const fin = { n: 'קונדישנינג: חבל קפיצה / אופני כושר', d: '8 דק׳ אינטרוולים' };
+  const note = sg === 'strength' ? 'דגש על מורכבים כבדים, מנוחות מלאות בין סטים.' : 'נפח מבוקר, דחיקה קרוב לכשל בטכניקה נקייה.';
+  const D = (split, ex) => ({ type: 'strength', split, title: split, icon: 'ph-barbell', note, ex: sg === 'fatloss' ? ex.concat([fin]) : ex });
+  const fullA = D('גוף מלא A', [{ n: 'סקוואט', d: main, tip: 'גב ניטרלי, עומק מתחת למקביל.' }, { n: 'לחיצת חזה', d: main }, { n: 'חתירת מוט', d: acc }, { n: 'לחיצת כתפיים', d: acc }, { n: 'פלאנק', d: '3 × 45 שנ׳' }]);
+  const fullB = D('גוף מלא B', [{ n: 'דדליפט רומני', d: main, tip: 'מוט קרוב לגוף, מתיחת המיתר האחורי.' }, { n: 'מתח או פולי עליון', d: main }, { n: 'לחיצת חזה בשיפוע', d: acc }, { n: 'מכרעיים', d: acc }, { n: 'כפיפות בטן', d: '3 × 15' }]);
+  const fullC = D('גוף מלא C', [{ n: 'סקוואט קדמי', d: main }, { n: 'לחיצת כתף בעמידה', d: main }, { n: 'חתירת חזה במכונה', d: acc }, { n: 'כפיפת מרפקים', d: acc }, { n: 'פשיטת מרפקים', d: acc }]);
+  const upper = D('עליון', [{ n: 'לחיצת חזה', d: main }, { n: 'חתירת מוט', d: main }, { n: 'לחיצת כתפיים', d: acc }, { n: 'מתח', d: acc }, { n: 'כפיפת מרפקים', d: acc }, { n: 'פשיטת מרפקים', d: acc }]);
+  const lower = D('תחתון', [{ n: 'סקוואט', d: main }, { n: 'דדליפט רומני', d: main }, { n: 'לחיצת רגליים', d: acc }, { n: 'מכרעיים', d: acc }, { n: 'הרמות עגל', d: '4 × 15' }]);
+  const push = D('דחיפה', [{ n: 'לחיצת חזה', d: main }, { n: 'לחיצת כתפיים', d: main }, { n: 'לחיצת חזה בשיפוע', d: acc }, { n: 'הרחקות צד', d: acc }, { n: 'פשיטת מרפקים', d: acc }]);
+  const pull = D('משיכה', [{ n: 'דדליפט', d: main }, { n: 'מתח', d: main }, { n: 'חתירת מוט', d: acc }, { n: 'פייס פול', d: acc }, { n: 'כפיפת מרפקים', d: acc }]);
+  const legs = D('רגליים', [{ n: 'סקוואט', d: main }, { n: 'לחיצת רגליים', d: acc }, { n: 'דדליפט רומני', d: acc }, { n: 'מכרעיים', d: acc }, { n: 'הרמות עגל', d: '4 × 15' }]);
+  let slots;
+  if (p.days <= 3) slots = { 0: fullA, 2: fullB, 4: fullC };
+  else if (p.days === 4) slots = { 0: upper, 1: lower, 3: { ...upper, split: 'עליון 2', title: 'עליון 2' }, 4: { ...lower, split: 'תחתון 2', title: 'תחתון 2' } };
+  else if (p.days === 5) slots = { 0: push, 1: pull, 2: legs, 3: upper, 4: lower };
+  else slots = { 0: push, 1: pull, 2: legs, 3: { ...push, split: 'דחיפה 2', title: 'דחיפה 2' }, 4: { ...pull, split: 'משיכה 2', title: 'משיכה 2' }, 5: { ...legs, split: 'רגליים 2', title: 'רגליים 2' } };
+  return fillWeek(slots);
+}
+
+function genCrossfit(p) {
+  const mk = (title, st, wod) => ({ type: 'strength', split: 'קרוספיט', title, icon: 'ph-fire', note: 'בלוק כוח/מיומנות ואז מטקון. עצימות גבוהה, טכניקה לפני מהירות.', ex: [{ n: 'כוח · ' + st.n, d: st.d }].concat(wod) });
+  const d1 = mk('WOD · דחיפה', { n: 'לחיצת כתפיים', d: '5 × 5' }, [{ n: 'AMRAP 12 דק׳', d: '10 שכיבות סמיכה / 12 סקוואט / 8 burpees' }]);
+  const d2 = mk('WOD · משיכה', { n: 'דדליפט', d: '5 × 3' }, [{ n: 'For Time', d: '21-15-9: מתח / קטלבל סווינג' }]);
+  const d3 = mk('WOD · רגליים', { n: 'סקוואט אחורי', d: '5 × 5' }, [{ n: 'EMOM 15 דק׳', d: 'מתחלף: 12 wall balls / 10 box jumps / 14 מכרעיים' }]);
+  const d4 = mk('WOD · מתכת', { n: 'נקי והדיפה', d: '5 × 3' }, [{ n: 'AMRAP 15 דק׳', d: '200 מ׳ ריצה / 15 KB swing / 10 push press' }]);
+  const d5 = mk('WOD · התעמלות', { n: 'מתח כוח', d: '5 × 4' }, [{ n: 'For Time', d: '5 סבבים: 10 toes-to-bar / 15 wall balls / 200 מ׳ ריצה' }]);
+  const slots = { 0: d1, 2: d2, 4: d3 };
+  if (p.days >= 4) slots[1] = d4;
+  if (p.days >= 5) slots[3] = d5;
+  if (p.days >= 6) slots[5] = { ...d1, title: 'WOD · בחירה', note: 'WOD פתוח לבחירתך, או השלמת חולשה מהשבוע.' };
+  return fillWeek(slots);
+}
+
+function genHybrid(p) {
+  const strengthA = { type: 'strength', split: 'כוח פונקציונלי', title: 'כוח פונקציונלי', icon: 'ph-barbell', note: 'מורכבים שמתורגמים לביצועים בשטח. טכניקה נקייה.', ex: [{ n: 'סקוואט', d: '4 × 6' }, { n: 'דדליפט רומני', d: '3 × 8' }, { n: 'לחיצת כתפיים', d: '3 × 8' }, { n: 'מתח', d: '3 × מקסימום' }, { n: 'נשיאת חקלאי', d: '3 × 40 מ׳' }] };
+  const strengthB = { type: 'strength', split: 'כוח עליון', title: 'כוח עליון', icon: 'ph-barbell', note: 'דחיפה ומשיכה כבדות לליבת כוח עליון.', ex: [{ n: 'לחיצת חזה', d: '4 × 6' }, { n: 'חתירת מוט', d: '4 × 8' }, { n: 'מקבילים', d: '3 × מקסימום' }, { n: 'מתח', d: '3 × מקסימום' }, { n: 'פלאנק', d: '3 × 60 שנ׳' }] };
+  const cond = { type: 'cardio', split: 'קונדישנינג', title: 'קונדישנינג', icon: 'ph-lightning', note: 'אינטרוולים פונקציונליים. דופק גבוה, מעברים מהירים.', ex: [{ n: 'חימום', d: '8 דק׳' }, { n: '5 סבבים: 400 מ׳ ריצה / 15 burpees / 20 wall balls', d: '~22 דק׳' }, { n: 'שחרור', d: '5 דק׳' }] };
+  const run = { type: 'cardio', split: 'אירובי · זון 2', title: 'ריצה קלה', icon: 'ph-heartbeat', note: 'בסיס אירובי בקצב שיחה.', ex: [{ n: 'ריצה קלה רציפה', d: '35 דק׳' }, { n: 'שחרור', d: '5 דק׳' }] };
+  const slots = { 0: strengthA, 2: cond, 4: run };
+  if (p.days >= 4) slots[1] = strengthB;
+  if (p.days >= 5) slots[5] = { type: 'cardio', split: 'אירובי ארוך', title: 'אירובי ארוך', icon: 'ph-sneaker-move', note: 'מאמץ אירובי ארוך, קצב נוח.', ex: [{ n: 'ריצה או אופניים רציף', d: '50-60 דק׳' }] };
+  if (p.days >= 6) slots[3] = { ...run, title: 'התאוששות פעילה', note: 'הליכה או אופניים קלים לשחרור.' };
+  return fillWeek(slots);
+}
+
+function genTriathlon(p) {
+  const big = p.subgoal === 'ironman' || p.subgoal === '70.3';
+  const swim = { type: 'cardio', split: 'שחייה', title: 'שחייה', icon: 'ph-waves', note: 'דגש על טכניקה ויעילות במים.', ex: [{ n: 'חימום', d: '200 מ׳' }, { n: 'סטים: 8 × 50 מ׳ + 4 × 100 מ׳', d: '~30 דק׳' }, { n: 'שחרור', d: '100 מ׳' }] };
+  const bike = { type: 'cardio', split: 'אופניים', title: 'אופניים', icon: 'ph-bicycle', note: 'בנייה אירובית על האופניים, קצב סיבוב גבוה.', ex: [{ n: 'רכיבה רציפה זון 2', d: big ? '90 דק׳' : '50 דק׳' }] };
+  const run = { type: 'cardio', split: 'ריצה', title: 'ריצה', icon: 'ph-sneaker-move', note: 'ריצה אירובית רציפה.', ex: [{ n: 'חימום', d: '5 דק׳' }, { n: 'ריצה רציפה', d: big ? '45 דק׳' : '30 דק׳' }, { n: 'שחרור', d: '5 דק׳' }] };
+  const brick = { type: 'cardio', split: 'בריק (אופניים→ריצה)', title: 'בריק', icon: 'ph-lightning', note: 'מעבר ישיר מאופניים לריצה. מרגיל את הרגליים למעבר התחרותי.', ex: [{ n: 'אופניים', d: '40 דק׳' }, { n: 'ריצה מיד אחרי', d: '15 דק׳' }] };
+  const strength = { type: 'strength', split: 'כוח מתקן', title: 'כוח מתקן', icon: 'ph-barbell', note: 'כוח וליבה למניעת פציעות.', ex: [{ n: 'סקוואט משקל גוף', d: '3 × 15' }, { n: 'מתח או חתירה', d: '3 × 8' }, { n: 'פלאנק', d: '3 × 45 שנ׳' }, { n: 'גשר ירכיים', d: '3 × 15' }] };
+  const slots = { 0: swim, 2: bike, 4: run };
+  if (p.days >= 4) slots[5] = brick;
+  if (p.days >= 5) slots[1] = strength;
+  if (p.days >= 6) slots[3] = { ...swim, title: 'שחייה 2', note: 'סט סיבולת ארוך יותר.' };
+  return fillWeek(slots);
+}
+
+function generateProgram(profile) {
+  const p = profile || {};
+  let week;
+  switch (p.discipline) {
+    case 'running': week = genRunning(p); break;
+    case 'gym': week = genGym(p); break;
+    case 'crossfit': week = genCrossfit(p); break;
+    case 'hybrid': week = genHybrid(p); break;
+    case 'triathlon': week = genTriathlon(p); break;
+    default: return { version: PROG_VERSION, discipline: 'calisthenics', week: defaultProgram().week };
+  }
+  return { version: PROG_VERSION, discipline: p.discipline, week };
 }
 
 /* ---------- מאגר ארוחות טבעוניות (צהריים / ערב) ----------
@@ -1152,9 +1289,10 @@ function weekIndex(d) {
 }
 function getProgram(d) {
   const dow = d.getDay();
-  /* שישי: אימון הכוח הרביעי, מתחלף בין דחיפה (A) למשיכה (B) לפי השבוע */
-  if (dow === 5) return weekIndex(d) % 2 === 0 ? state.program.week[0] : state.program.week[2];
-  return state.program.week[dow];
+  const wk = state.program.week;
+  /* שישי בקליסטניקס (week[5]===null): אימון הכוח הרביעי מתחלף A/B. בתוכניות מחוללות שישי מלא. */
+  if (dow === 5 && wk[5] == null) return weekIndex(d) % 2 === 0 ? wk[0] : wk[2];
+  return wk[dow];
 }
 function weekDates(ref = new Date()) {
   const start = new Date(ref);
@@ -2274,6 +2412,75 @@ function saveWorkout() {
 
 /* ---- onboarding ---- */
 let onbStep = 0;
+/* ---------- בניית תוכנית אימון (Plan Builder) ---------- */
+let goalDraft = null;
+function openGoalBuilder() {
+  const pr = state.settings.profile;
+  goalDraft = pr ? { ...pr, equipment: (pr.equipment || []).slice() }
+    : { discipline: 'calisthenics', subgoal: 'base', level: 'intermediate', days: 4, equipment: ['bodyweight'], age: '', height: '' };
+  renderGoalBuilder();
+  openSheet('sheet-goal');
+}
+function readGoalInputs() {
+  if (!goalDraft) return;
+  const a = $('#g-age'), h = $('#g-height');
+  if (a) goalDraft.age = a.value;
+  if (h) goalDraft.height = h.value;
+}
+function gChips(field, opts, sel, multi) {
+  return `<div class="gchips">${opts.map(o => {
+    const on = multi ? sel.includes(o.id) : String(sel) === String(o.id);
+    return `<button class="gchip ${on ? 'on' : ''}" data-act="g-pick" data-arg="${field}:${o.id}">${o.icon ? `<i class="ph ${o.icon}"></i>` : ''}${esc(o.name)}</button>`;
+  }).join('')}</div>`;
+}
+function renderGoalBuilder() {
+  const g = goalDraft;
+  const disc = DISCIPLINES.find(x => x.id === g.discipline) || DISCIPLINES[0];
+  $('#goal-body').innerHTML = `
+    <label class="fld">דיסציפלינה</label>
+    ${gChips('discipline', DISCIPLINES, g.discipline, false)}
+    <label class="fld">מטרה</label>
+    ${gChips('subgoal', disc.subs, g.subgoal, false)}
+    <label class="fld">רמה</label>
+    ${gChips('level', LEVELS, g.level, false)}
+    <label class="fld">ימים בשבוע</label>
+    ${gChips('days', [{ id: '3', name: '3' }, { id: '4', name: '4' }, { id: '5', name: '5' }, { id: '6', name: '6' }], g.days, false)}
+    <label class="fld">ציוד זמין</label>
+    ${gChips('equipment', EQUIPMENT, g.equipment, true)}
+    <div class="sheet-grid" style="margin-top:14px">
+      <div><label class="fld" for="g-age">גיל</label><input type="number" id="g-age" inputmode="numeric" value="${g.age || ''}"></div>
+      <div><label class="fld" for="g-height">גובה (ס"מ)</label><input type="number" id="g-height" inputmode="numeric" value="${g.height || ''}"></div>
+    </div>`;
+}
+function goalPick(field, value) {
+  readGoalInputs();
+  const g = goalDraft;
+  if (field === 'discipline') {
+    g.discipline = value;
+    const disc = DISCIPLINES.find(x => x.id === value);
+    g.subgoal = disc.subs[0].id;
+  } else if (field === 'days') {
+    g.days = parseInt(value, 10);
+  } else if (field === 'equipment') {
+    g.equipment = g.equipment || [];
+    const i = g.equipment.indexOf(value);
+    if (i >= 0) { if (g.equipment.length > 1) g.equipment.splice(i, 1); }
+    else g.equipment.push(value);
+  } else {
+    g[field] = value;
+  }
+  renderGoalBuilder();
+}
+function buildPlan() {
+  readGoalInputs();
+  const g = { ...goalDraft, equipment: (goalDraft.equipment || []).slice() };
+  state.settings.profile = g;
+  state.program = generateProgram(g);
+  save(); closeSheets(); showTab('today');
+  const dn = (DISCIPLINES.find(x => x.id === g.discipline) || {}).name || '';
+  toast('התוכנית נבנתה: ' + dn);
+}
+
 function showOnboarding() {
   onbStep = 0;
   $('#onb-startw').value = state.settings.startWeight;
@@ -2308,7 +2515,8 @@ function onbFinish() {
   save();
   $('#onb').hidden = true;
   render();
-  toast('הכול מוכן. קדימה לסגור את היום');
+  /* השלב הבא: בחירת מטרה ובניית תוכנית אישית */
+  openGoalBuilder();
 }
 
 /* ---------- actions ---------- */
@@ -2347,6 +2555,9 @@ document.addEventListener('click', e => {
       save(); renderToday(); break;
     case 'edit-workout': openWorkoutEditor(); break;
     case 'avatar': $('#avatar-input').click(); break;
+    case 'open-goal': openGoalBuilder(); break;
+    case 'g-pick': { const ix = arg.indexOf(':'); goalPick(arg.slice(0, ix), arg.slice(ix + 1)); break; }
+    case 'build-plan': buildPlan(); break;
 
     /* מצב אימון מודרך */
     case 'start-session': startSession(); break;
