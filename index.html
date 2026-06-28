@@ -640,6 +640,42 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
 .gchip>i{font-size:15px}
 .gchip.on{background:rgba(185,233,78,.14);border-color:var(--acc);color:var(--acc)}
 .gchip:active{transform:scale(.95)}
+/* רשימת התוכנית השבועית */
+.plan-list{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.plan-row{display:flex;align-items:center;gap:11px;width:100%;text-align:right;padding:13px 14px;border-top:1px solid var(--line);transition:background .14s ease}
+.plan-row:first-child{border-top:none}
+.plan-row.today{background:rgba(185,233,78,.06)}
+.plan-row:not(.rest):active{background:rgba(244,248,235,.04)}
+.plan-day{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--tx-3);background:var(--card-2)}
+.plan-row.today .plan-day{background:var(--acc);color:var(--on-acc)}
+.plan-ic{flex:none;color:var(--acc);font-size:17px}
+.plan-row.rest .plan-ic{color:var(--tx-3)}
+.plan-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.plan-tx b{font-size:14px;font-weight:700}
+.plan-tx span{font-size:11px;color:var(--tx-3);font-weight:600}
+.plan-row.rest .plan-tx b{color:var(--tx-2);font-weight:600}
+.plan-caret{color:var(--tx-3);font-size:15px;flex:none}
+.plan-done{color:var(--acc);font-size:18px;flex:none}
+/* כרטיס תחזית + גרף */
+.proj-wrap{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:inset 0 1px 0 rgba(244,248,235,.04)}
+.proj-head{display:flex;align-items:flex-start;justify-content:space-between}
+.proj-cur{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.proj-cur small{font-size:13px;color:var(--tx-2);font-weight:600}
+.proj{width:100%;height:150px;display:block;margin-top:12px;overflow:visible}
+.proj-line{fill:none;stroke:var(--acc);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.proj-dot{fill:var(--acc)}
+.proj-goal{stroke:var(--tx-3);stroke-width:1;stroke-dasharray:3 3;opacity:.55}
+.proj-proj{stroke:var(--c-cool);stroke-width:2;stroke-dasharray:4 4}
+.proj-goaldot{fill:var(--c-cool)}
+.proj-legend{display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--tx-3);font-weight:600}
+.proj-legend i{display:inline-block;width:11px;height:2px;border-radius:2px;vertical-align:middle;margin-left:5px}
+.proj-msg{font-size:12.5px;color:var(--tx-2);font-weight:600;margin-top:12px;line-height:1.55;background:var(--card-2);border-radius:12px;padding:11px 13px}
+.proj-msg b{color:var(--acc)}
+/* פרטי יום (sheet) */
+.dp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 2px;border-top:1px solid var(--line)}
+.dp-row:first-child{border-top:none}
+.dp-n{font-size:14px;font-weight:600}
+.dp-d{font-size:12.5px;color:var(--tx-3);font-weight:600}
 .stage-foot{position:absolute;bottom:0;right:0;left:0;z-index:3;padding:40px 6px 6px;
   background:linear-gradient(to top, var(--bg) 8%, rgba(11,13,10,.82) 46%, transparent 100%);
   display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
@@ -885,6 +921,16 @@ label.fld{display:block;font-size:12.5px;font-weight:600;color:var(--tx-2);margi
   <div class="sheet-foot">
     <button class="btn btn-acc btn-wide" data-act="build-plan"><i class="ph ph-sparkle"></i>בנה לי תוכנית</button>
   </div>
+</div>
+
+<!-- day plan sheet -->
+<div class="sheet" id="sheet-day">
+  <div class="sheet-grip"></div>
+  <h2 id="day-title"></h2>
+  <p class="sub" id="day-sub"></p>
+  <div class="wk-note" id="day-note" style="margin:0 0 14px"></div>
+  <div id="day-body"></div>
+  <div class="sheet-foot"><button class="btn btn-soft btn-wide" data-act="close-sheets">סגירה</button></div>
 </div>
 
 <!-- onboarding -->
@@ -1308,6 +1354,7 @@ function weekDates(ref = new Date()) {
 const $ = s => document.querySelector(s);
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
 function typeLabel(t) { return t === 'strength' ? 'אימון כוח' : t === 'cardio' ? 'אימון אירובי' : 'מנוחה'; }
+function parseKey(k) { const p = k.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); }
 
 let toastTimer = null;
 function toast(msg) {
@@ -2081,6 +2128,42 @@ function renderHabits() {
 }
 
 /* ---------- render: week ---------- */
+/* גרף תחזית: שקילות בפועל + קו יעד + תחזית מקווקוות עד תאריך משוער */
+function projectionChart() {
+  const s = state.settings;
+  const W = 320, H = 150, padL = 8, padR = 8, padT = 14, padB = 16;
+  const weighs = (state.weights || []).slice().sort((a, b) => a.date < b.date ? -1 : 1);
+  const cur = weighs.length ? weighs[weighs.length - 1].kg : s.startWeight;
+  const goal = s.goalWeight;
+  const losing = cur > goal;
+  const rate = losing ? 0.5 : 0.3;                 /* קצב בריא לשבוע */
+  const weeks = Math.max(0, Math.abs(cur - goal) / rate);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const startDate = weighs.length ? parseKey(weighs[0].date) : today;
+  const goalDate = new Date(today.getTime() + weeks * 7 * 86400000);
+  const tMin = Math.min(startDate.getTime(), today.getTime());
+  const tMax = Math.max(goalDate.getTime(), today.getTime() + 7 * 86400000);
+  const tSpan = Math.max(1, tMax - tMin);
+  const allKg = weighs.map(w => w.kg).concat([cur, goal, s.startWeight]);
+  const yMin = Math.min(...allKg) - 0.8, yMax = Math.max(...allKg) + 0.8;
+  const ySpan = Math.max(0.6, yMax - yMin);
+  const X = t => padL + (t - tMin) / tSpan * (W - padL - padR);
+  const Y = kg => padT + (yMax - kg) / ySpan * (H - padT - padB);
+  let pts = weighs.map(w => [X(parseKey(w.date).getTime()), Y(w.kg)]);
+  if (!pts.length) pts = [[X(today.getTime()), Y(cur)]];
+  const goalY = Y(goal).toFixed(1);
+  const pf = [X(today.getTime()).toFixed(1), Y(cur).toFixed(1)];
+  const pt = [X(goalDate.getTime()).toFixed(1), Y(goal).toFixed(1)];
+  const svg = `<svg class="proj" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <line class="proj-goal" x1="${padL}" y1="${goalY}" x2="${W - padR}" y2="${goalY}"></line>
+    <polyline class="proj-line" points="${pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}"></polyline>
+    ${pts.map(p => `<circle class="proj-dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6"></circle>`).join('')}
+    <line class="proj-proj" x1="${pf[0]}" y1="${pf[1]}" x2="${pt[0]}" y2="${pt[1]}"></line>
+    <circle class="proj-goaldot" cx="${pt[0]}" cy="${pt[1]}" r="3.6"></circle>
+  </svg>`;
+  return { svg, weeks, goalDate, cur, goal };
+}
+
 function renderWeek() {
   const s = state.settings;
   const now = new Date();
@@ -2154,7 +2237,34 @@ function renderWeek() {
 
   const todayWeight = state.weights.find(w => w.date === tk);
 
-  let html = `
+  /* תחזית משקל + תאריך משוער ליעד */
+  const proj = projectionChart();
+  const projMsg = proj.cur <= proj.goal
+    ? `הגעת ליעד <b>${proj.goal} ק"ג</b>. עכשיו שומרים. כל הכבוד.`
+    : `בקצב בריא של חצי ק"ג בשבוע תגיע ל-<b>${proj.goal} ק"ג</b> בעוד כ-<b>${Math.round(proj.weeks)} שבועות</b>, בערך ${new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long' }).format(proj.goalDate)}.`;
+
+  /* רשימת התוכנית השבועית: כל 7 הימים */
+  const discName = (DISCIPLINES.find(x => x.id === (state.program.discipline || 'calisthenics')) || {}).name || 'תוכנית';
+  let planRows = '';
+  for (let dow = 0; dow < 7; dow++) {
+    const dt = dates[dow];
+    const prog = getProgram(dt);
+    const isToday = dateKey(dt) === tk;
+    const done = dayRO(dateKey(dt)).workoutDone;
+    const isRest = prog.type === 'rest';
+    planRows += `<button class="plan-row ${isToday ? 'today' : ''} ${isRest ? 'rest' : ''}" ${isRest ? '' : `data-act="day-plan" data-arg="${dow}"`}>
+      <span class="plan-day">${DAY_LETTERS[dt.getDay()]}</span>
+      <span class="plan-ic"><i class="ph ${prog.icon}"></i></span>
+      <span class="plan-tx"><b>${esc(prog.title)}</b>${isRest ? '' : `<span>${esc(prog.split || typeLabel(prog.type))}${prog.ex.length ? ' · ' + prog.ex.length + ' תרגילים' : ''}</span>`}</span>
+      ${done ? '<i class="ph-fill ph-check-circle plan-done"></i>' : (isRest ? '' : '<i class="ph ph-caret-left plan-caret"></i>')}
+    </button>`;
+  }
+  const planCard = `
+  <div class="card-head" style="margin:4px 2px 10px"><span class="card-title"><i class="ph ph-barbell"></i>התוכנית השבועית</span><button class="btn-text" data-act="open-goal">${esc(discName)} · שינוי</button></div>
+  <div class="plan-list">${planRows}</div>`;
+
+  let html = planCard + `
+  <div class="sec-title" style="margin-top:18px"><span>ההתקדמות שלי</span></div>
   <div class="card">
     <div class="card-head">
       <span class="card-title"><i class="ph ph-calendar-check"></i>השבוע שלי</span>
@@ -2185,21 +2295,26 @@ function renderWeek() {
     <div class="streak-chip"><b class="num">${stSupps}</b><span>ימי תוספים</span></div>
   </div>
 
-  <div class="sec-title"><span>הדרך ל-${s.goalWeight} ק"ג</span></div>
-  <div class="card">
-    <div class="weight-flex">
+  <div class="sec-title"><span>התחזית שלי</span></div>
+  <div class="proj-wrap">
+    <div class="proj-head">
       <div>
-        <div class="weight-now num">${cw.toFixed(1)} <small>ק"ג</small></div>
-        <div class="hint num">${left > 0 ? 'נשארו ' + left.toFixed(1) + ' ק"ג ליעד' : 'הגעת ליעד. כל הכבוד!'}</div>
+        <div class="proj-cur num">${cw.toFixed(1)} <small>ק"ג</small></div>
+        <div class="hint num" style="margin-top:2px">${left > 0 ? 'נשארו ' + left.toFixed(1) + ' ק"ג ליעד' : 'ביעד'}</div>
       </div>
-      ${spark}
+      <div style="text-align:left">
+        <div class="num" style="font-size:21px;font-weight:800;color:var(--c-cool)">${s.goalWeight.toFixed(0)}</div>
+        <div class="hint">יעד ק"ג</div>
+      </div>
     </div>
-    <div class="bar"><i style="width:${wPct}%"></i></div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px">
-      <span class="hint num">${s.startWeight.toFixed(0)}</span>
-      <span class="hint num">${s.goalWeight.toFixed(0)}</span>
+    ${proj.svg}
+    <div class="proj-legend">
+      <span><i style="background:var(--acc)"></i>בפועל</span>
+      <span><i style="background:var(--c-cool)"></i>תחזית</span>
+      <span><i style="background:var(--tx-3)"></i>יעד</span>
     </div>
-    <div class="weight-add">
+    <div class="proj-msg">${projMsg}</div>
+    <div class="weight-add" style="margin-top:14px">
       <input type="number" id="weight-input" step="0.1" inputmode="decimal" placeholder="שקילה של היום (ק&quot;ג)" value="${todayWeight ? todayWeight.kg : ''}">
       <button class="btn btn-acc" data-act="save-weight">שמירה</button>
     </div>
@@ -2412,6 +2527,19 @@ function saveWorkout() {
 
 /* ---- onboarding ---- */
 let onbStep = 0;
+/* ---------- פרטי יום מהתוכנית (קריאה בלבד) ---------- */
+function openDayPlan(dow) {
+  const dt = weekDates()[dow];
+  const prog = getProgram(dt);
+  $('#day-title').textContent = prog.title;
+  $('#day-sub').textContent = prog.split || typeLabel(prog.type);
+  $('#day-note').textContent = prog.note || '';
+  $('#day-body').innerHTML = (prog.ex || []).map(ex =>
+    `<div class="dp-row"><span class="dp-n">${esc(ex.n)}</span><span class="dp-d num">${esc(ex.d)}</span></div>`
+  ).join('') || '<div class="lib-empty">יום מנוחה</div>';
+  openSheet('sheet-day');
+}
+
 /* ---------- בניית תוכנית אימון (Plan Builder) ---------- */
 let goalDraft = null;
 function openGoalBuilder() {
@@ -2558,6 +2686,7 @@ document.addEventListener('click', e => {
     case 'open-goal': openGoalBuilder(); break;
     case 'g-pick': { const ix = arg.indexOf(':'); goalPick(arg.slice(0, ix), arg.slice(ix + 1)); break; }
     case 'build-plan': buildPlan(); break;
+    case 'day-plan': openDayPlan(parseInt(arg, 10)); break;
 
     /* מצב אימון מודרך */
     case 'start-session': startSession(); break;
